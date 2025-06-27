@@ -1,0 +1,927 @@
+{%extends "base2.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/dashboard.css'%}" />
+<link rel="stylesheet" href="{%static 'css/header.css'%}" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-3d"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.0"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<div class="container-fluid" style="margin: 0; padding: 0;">
+    <div class="header-logo">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex justify-content-start" id="logo_esquerda">
+                    <a href="https://icepi.es.gov.br/" target="_blank"><img src="{%static 'img/icepi.png'%}"
+                            alt="Logo Left" class="img-fluid logo"></a>
+                </div>
+                <div class="col-md-4 text-center" id="titulo">
+                    <!-- <img src="{% static 'img/MHDigital_03.png' %}" class="logo-barra img-fluid"> -->
+                     <img src="{% static 'img/MHDigital_03.png' %}" class="img-animada logo-barra img-fluid" id="logo-img">
+                </div>
+                <div class="col-md-4 d-flex justify-content-end" id="logo_direita">
+                    <a href="https://www.gov.br/saude/pt-br/sus" target="_blank"><img src="{%static 'img/sus.png'%}"
+                            alt="Logo Right 2" class="img-fluid logo"></a>
+                    <a href="https://saude.es.gov.br/" target="_blank"><img src="{%static 'img/brasao_es.png'%}"
+                            alt="Logo Right 2" class="img-fluid logo"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                  INÍCIO                -------------------------->
+    <!------------------------------- Filtro de seleção dos dados       -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div class="row" style="background-color: #e5fbff; padding-top: 20px;">
+        <div class="row mb-3">
+            <h4 class="text-center"><i class="fas fa-chart-line me-2"></i> <i>Painéis</i></i></h4>
+        </div>
+        <div class="col-md-3">
+            <div class="row mb-3 justify-content-center">
+                <div class="d-flex align-items-center gap-2">
+                    <label for="estabelecimento" class="mb-0"><b>Estabelecimento</b></label>
+                    <select class="form-select form-select-sm" id="estabelecimento" name="estabelecimento"
+                        style="max-width: 180px;">
+                        <option value="" selected></option>
+                        {% for estabelecimento in estabelecimentos %}
+                        <option value="{{ estabelecimento.id }}">{{estabelecimento.sigla}} - {{estabelecimento}}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="row mb-3 justify-content-center">
+                <div class="d-flex align-items-center gap-2">
+                    <label for="indicador" class="mb-0"><b>Indicador</b></label>
+                    <select class="form-select form-select-sm" id="indicador" required
+                        style="text-align-last: center; max-width: 180px;">
+                        <option value="dashboard_altas_por_motivo_de_admissao" selected>Altas por Motivo de Internação
+                        </option>
+                        <option value="dashboard_altas_por_hora">Altas por Hora</option>
+                        <option value="dashboard_longa_permanecia">Longa Permanência</option>
+                        <option value="dashboard_admissoes_e_saidas">Admissões e saídas</option>
+                        <option value="dashboard_admissoes">Admissões</option>
+                        <option value="dashboard_altas_dia_da_semana">Altas Dia da Semana</option>
+                        <option value="dashboard_altas_x_transferencia">Altas x Transferência</option>
+                        <option value="dashboard_previsoes_de_alta">Previsões de Alta</option>
+                        <option value="dashboard_tempos_de_permanencia_mh">Tempos de Permanência MH</option>
+                        <option value="dashboard_tempos_de_permanencia">Tempos de Permanência</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="row mb-3 justify-content-center">
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <!-- Bloco: Período de -->
+                    <div class="d-flex align-items-center gap-2" style="white-space: nowrap;">
+                        <label for="dt_periodo_de" class="mb-0"><b>Período de</b></label>
+                        <input type="date" class="form-control form-control-sm" id="dt_periodo_de"
+                            style="max-width: 180px;">
+                    </div>
+                    <!-- Bloco: até -->
+                    <div class="d-flex align-items-center gap-2" style="white-space: nowrap;">
+                        <label for="dt_periodo_ate" class="mb-0"><b>até</b></label>
+                        <input type="date" class="form-control form-control-sm" id="dt_periodo_ate"
+                            style="max-width: 180px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="row mb-3 text-center">
+                <div class="col">
+                    <button id="aplicarFiltro" onclick="aplicarFiltro()"
+                        class="btn btn-outline-primary me-2 custom-aplicar">
+                        <i class="fas fa-filter me-2"></i> Aplicar Filtro
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!------------------------------- Filtro de seleção dos dados       -------------------------->
+    <!---------------------------                  FIM                  -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                  INÍCIO                  ------------------------>
+    <!-------------------------- Painel de Altas por Motivo de Internação ------------------------>
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_altas_por_motivo_de_admissao' class="painel col-md-12" style="display: none">
+        <br>
+        <div class="row align-items-center text-center fs-3">
+            <b><i>Altas por Motivo de Internação</i></b>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div id="canvas-wrapper" class="w-100" style="max-height: 500px; overflow-y: auto;">
+                    <canvas id="canvas_altas_por_motivo_de_admissao" class="canvas-grafico w-100"
+                        style="height: 500px;"></canvas>
+                </div>
+                <div class="zoom-controls justify-content-center gap-2">
+                    <button onclick="zoomInAltasPorMotivoAdmissao()" title="Zoom +">+</button>
+                    <button onclick="resetZoomAltasPorMotivoAdmissao()" title="Resetar Zoom">⭯</button>
+                    <button onclick="zoomOutAltasPorMotivoAdmissao()" title="Zoom -">−</button>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-4 border-0">
+                    <h5 class="text-center mb-4 text-primary fw-semibold">
+                        <i class="fas fa-info-circle me-2"></i>Resumo da Sessão
+                    </h5>
+
+                    <!-- Admissões e Saídas -->
+                    <div class="row mb-4 text-center">
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-secondary" for="total_admissoes">Admissões</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold" id="total_admissoes"
+                                disabled>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label fw-semibold text-secondary" for="total_saidas">Saídas</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold" id="total_saidas"
+                                disabled>
+                        </div>
+                    </div>
+
+                    <!-- Permanência Hospitalar -->
+                    <div class="mb-4">
+                        <label class="form-label d-block fw-semibold text-primary text-center mb-2"><i
+                                class="fas fa-hospital me-2"></i>Permanência Hospitalar</label>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <label class="form-label text-muted" for="tempo_permanencia_hospitalar">Média</label>
+                                <input type="text" class="form-control text-center bg-light"
+                                    id="tempo_permanencia_hospitalar" disabled>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted"
+                                    for="tempo_permanencia_hospitalar_mediana">Mediana</label>
+                                <input type="text" class="form-control text-center bg-light"
+                                    id="tempo_permanencia_hospitalar_mediana" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                    <!-- Permanência na MH -->
+                    <div>
+                        <label class="form-label d-block fw-semibold text-primary text-center mb-2"><i
+                                class="fas fa-procedures me-2"></i>Permanência na MH</label>
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <label class="form-label text-muted" for="tempo_permanencia_MH">Média</label>
+                                <input type="text" class="form-control text-center bg-light" id="tempo_permanencia_MH"
+                                    disabled>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted" for="tempo_permanencia_MH_mediana">Mediana</label>
+                                <input type="text" class="form-control text-center bg-light"
+                                    id="tempo_permanencia_MH_mediana" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!-------------------------- Painel de Altas por Motivo de Internação ------------------------>
+    <!--------------------------                  FIM                     ------------------------>
+    <!-------------------------------------------------------------------------------------------->
+
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                  INÍCIO                -------------------------->
+    <!--------------------------        Painel de Altas por Hora        -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_altas_por_hora' class="painel col-md-12 justify-content-center" style="display: none">
+        <br>
+        <div class="row align-items-center text-center fs-3">
+            <b><i>Altas por Hora</i></b>
+        </div>
+        <br>
+
+        <div id="loading-spinner-altas_por_hora" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-9 d-flex flex-column align-items-center">
+
+                <!-- Filtro Médico -->
+                <div class="row mb-3 w-100 justify-content-center">
+                    <div class="d-flex gap-2 justify-content-center align-items-center">
+                        <label for="profissional" class="mb-0"><b>Médico</b></label>
+                        <select class="form-select form-select-sm" id="profissional" name="profissional"
+                            style="max-width: 400px;">
+                            <option value="" selected></option>
+                            {% for medico in medicos %}
+                            <option value="{{ medico.id }}">Dr(a) {{ medico }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Gráfico -->
+                <div id="canvas-wrapper" class="w-100 d-flex justify-content-center"
+                    style="max-height: 500px; overflow-y: auto;">
+                    <canvas id="canvas_altas_por_hora" class="canvas-grafico"></canvas>
+                </div>
+
+                <!-- Observação -->
+                <small class="text-center">
+                    <i style="color: #e85c5c;">* Cada barra corresponde ao período da hora exata até os 59 minutos
+                        restantes</i>
+                </small>
+            </div>
+
+            <!-- Coluna lateral (Resumo) -->
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-4 border-0">
+                    <h5 class="text-center mb-4 text-primary fw-semibold">
+                        <i class="fas fa-info-circle me-2"></i>Resumo da Sessão
+                    </h5>
+
+                    <!-- Total de altas até 10hrs -->
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="total_ate_10hrs">Total de altas até
+                            10hrs</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold" id="total_ate_10hrs"
+                            disabled>
+                    </div>
+
+                    <!-- % de altas até 10hrs -->
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="percentual_ate_10hrs">% de altas até
+                            10hrs</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold" id="percentual_ate_10hrs"
+                            disabled>
+                    </div>
+
+                    <!-- % de altas até 10hrs no último semestre -->
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="percentual_ate_10hrs_6_meses">% de
+                            altas até 10hrs no último semestre</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold"
+                            id="percentual_ate_10hrs_6_meses" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--
+        <div class="row align-items-center my-3">
+            <div class="text-center mb-3">
+                <button onclick="exportCSV_AltasPorMotivo()" class="btn btn-outline-success me-2">
+                    <i class="fas fa-file-csv me-1"></i> Exportar CSV
+                </button>
+                <button onclick="printChart()" class="btn btn-outline-secondary me-2">
+                    <i class="fas fa-print me-1"></i> Imprimir Gráfico
+                </button>
+            </div>
+        </div>
+        -->
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------        Painel de Altas por Hora        -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------       Painel de Longa Permanência      -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_longa_permanecia' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Longa
+                        Permanência</i></b></span>
+            <span class="position-absolute end-0 top-50 translate-middle-y fs-6 text-danger"><i>Tempo de internação
+                    maior que 15 dias</i></span>
+        </div>
+
+        <div id="loading-spinner-longa_permanecia" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row align-items-start">
+            <div class="col-md-7">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center" style="gap: 8px; flex-wrap: nowrap;">
+                            <label for="comanejo_cirurgico" class="form-label mb-0 me-2"
+                                style="white-space: nowrap;"><b>Comanejo clínico</b></label>
+                            <select class="form-select form-select-sm flex-grow-1" id="comanejo_cirurgico"
+                                name="comanejo_cirurgico" style="max-width: 400px;">
+                                <option value="" selected></option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center" style="gap: 8px; flex-wrap: nowrap;">
+                            <label for="cuidados_paliativos" class="form-label mb-0 me-2"
+                                style="white-space: nowrap;"><b>Cuidados paliativos</b></label>
+                            <select class="form-select form-select-sm flex-grow-1" id="cuidados_paliativos"
+                                name="cuidados_paliativos" style="max-width: 400px;">
+                                <option value="" selected></option>
+                                {% for subgrupo in subgrupos %}
+                                {% if subgrupo.grupo == "Cuidados Paliativos" %}
+                                {% if subgrupo.conteudo == "Não" %}
+                                <option value="{{ subgrupo.id }}">{{ subgrupo.conteudo }}</option>
+                                {% elif subgrupo.conteudo == "Sim" %}
+                                <option value="{{ subgrupo.id }}">{{ subgrupo.conteudo }} - Processo ativo de morte
+                                </option>
+                                {% endif %}
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_longa_permanecia" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card shadow-sm p-3 mb-4 bg-light">
+                    <div class="row text-center mb-3">
+                        <canvas id="grafico_desfecho_longa_permanencia" height="200"
+                            style="max-height: 250px;"></canvas>
+                    </div>
+
+                    <div class="row text-center mb-3">
+                        <canvas id="grafico_patologia_longa_permanencia" height="200"
+                            style="max-height: 250px;"></canvas>
+                    </div>
+                    <div class="row text-center mb-3">
+                        <div style="max-height: 200px; overflow-y: auto;">
+                            <table class="table table-striped table-sm table-hover">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th>Atendimento</th>
+                                        <th>Duração (dias)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela_atendimentos_longa_permanencia">
+                                    <!-- Preenchido via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------       Painel de Longa Permanência      -------------------------->
+    <!--------------------------                FIM                     -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------       Painel de Admissões e Saídas     -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_admissoes_e_saidas' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Admissões e
+                        Saídas</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes_e_saidas" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_admissoes_e_saidas" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_admissoes_e_saidas_municipio" class="canvas-grafico"></canvas>
+                </div>
+                <div class="zoom-controls justify-content-center gap-2">
+                    <button onclick="zoomInAdmissoesSaidasMunicipio()" title="Zoom +">+</button>
+                    <button onclick="resetZoomAdmissoesSaidasMunicipio()" title="Resetar Zoom">⭯</button>
+                    <button onclick="zoomOutAdmissoesSaidasMunicipio()" title="Zoom -">−</button>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_admissoes_e_saidas_admissoes" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_admissoes_e_saidas_saidas" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------       Painel de Admissões e Saídas     -------------------------->
+    <!--------------------------                FIM                     -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------           Painel de Admissões          -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_admissoes' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Motivo de
+                        Admissões</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row align-items-start">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center justify-content-center gap-2">
+                            <label for="medico_admissoes" class="mb-0"><b>Médico</b></label>
+                            <select class="form-select form-select-sm" id="medico_admissoes" style="max-width: 400px;">
+                                <option value="" selected></option>
+                                {% for medico in medicos %}
+                                <option value="{{ medico.id }}">Dr(a) {{ medico }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="d-flex align-items-center" style="gap: 8px; flex-wrap: nowrap;">
+                            <label for="comanejo_cirurgico_admissoes" class="form-label mb-0 me-2"
+                                style="white-space: nowrap;"><b>Comanejo clínico</b></label>
+                            <select class="form-select form-select-sm flex-grow-1" id="comanejo_cirurgico_admissoes"
+                                name="comanejo_cirurgico_admissoes" style="max-width: 400px;">
+                                <option value="" selected></option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-1"></div>
+                </div>
+
+                <div class="d-flex justify-content-center">
+                    <canvas id="canvas_admissoes" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="d-flex justify-content-center" style="height: 500px;">
+                    <canvas id="canvas_admissoes_motivo" class="canvas-grafico"
+                        style="height: 100% !important; width: 100%; min-height: 500px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------          Painel de Admissões           -------------------------->
+    <!--------------------------                FIM                     -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------          Altas Dia da Semana           -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_altas_dia_da_semana' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Altas Dia da Semana</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row justify-content-center">
+            <div class="col-md-9 d-flex flex-column align-items-center">
+                <div class="row mb-3 w-100 justify-content-center">
+                    <div class="col-md-5">
+                        <div class="d-flex gap-2 justify-content-center align-items-center">
+                            <label for="profissional_altas_dia_da_semana" class="mb-0"><b>Médico</b></label>
+                            <select class="form-select form-select-sm" id="profissional_altas_dia_da_semana" name="profissional_altas_dia_da_semana"
+                                style="max-width: 400px;">
+                                <option value="" selected></option>
+                                {% for medico in medicos %}
+                                <option value="{{ medico.id }}">Dr(a) {{ medico }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex gap-2 justify-content-center align-items-center">
+                            <label for="comanejo_cirurgico_altas_dia_da_semana" class="mb-0"><b>Comanejo</b></label>
+                            <select class="form-select form-select-sm flex-grow-1" id="comanejo_cirurgico_altas_dia_da_semana"
+                                name="comanejo_cirurgico_altas_dia_da_semana" style="max-width: 400px;">
+                                <option value="" selected></option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                    </div>     
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2 justify-content-center align-items-center">
+                            <label for="dia_da_semana_altas_dia_da_semana" class="mb-0" style="white-space: nowrap;"><b>Dia da semana</b></label>
+                            <select class="form-select form-select-sm" id="dia_da_semana_altas_dia_da_semana" name="dia_da_semana_altas_dia_da_semana"
+                                style="max-width: 400px;">
+                                <option value="" selected></option>
+                                <option value="Segunda">Segunda</option>
+                                <option value="Terça">Terça</option>
+                                <option value="Quarta">Quarta</option>
+                                <option value="Quinta">Quinta</option>
+                                <option value="Sexta">Sexta</option>
+                                <option value="Sábado">Sábado</option>
+                                <option value="Domingo">Domingo</option>
+                            </select>
+                        </div>
+                    </div>                                   
+                </div>
+
+                <!-- Gráfico -->
+                <div id="canvas-wrapper" class="w-100 d-flex justify-content-center"
+                    style="max-height: 350px; overflow-y: auto;">
+                    <canvas id="canvas_altas_dia_da_semana" class="canvas-grafico"></canvas>
+                </div>
+            </div>
+
+            <!-- Coluna lateral (Resumo) -->
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-4 border-0">
+                    <h5 class="text-center mb-4 text-primary fw-semibold">
+                        <i class="fas fa-info-circle me-2"></i>Resumo da Sessão
+                    </h5>
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="altas_no_fim_de_semana">Altas no fim de semana</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold" id="altas_no_fim_de_semana" disabled>
+                    </div>
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="percentual_altas_no_fim_de_semana">% de altas no fim de semana</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold" id="percentual_altas_no_fim_de_semana" disabled>
+                    </div>
+                    <div class="row mb-4 text-center">
+                        <label class="form-label fw-semibold text-secondary" for="percentual_acumulado_ultimo_trimestre">% acumulado no último trimestre</label>
+                        <input type="text" class="form-control text-center bg-light fw-bold" id="percentual_acumulado_ultimo_trimestre" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------          Altas Dia da Semana           -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------        Altas x Transferência           -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_altas_x_transferencia' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Altas x Transferência</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="d-flex gap-2 justify-content-center align-items-center">
+            <label for="comanejo_cirurgico_altas_x_transferencia" class="mb-0"><b>Comanejo</b></label>
+            <select class="form-select form-select-sm flex-grow-1" id="comanejo_cirurgico_altas_x_transferencia"
+                name="comanejo_cirurgico_altas_x_transferencia" style="max-width: 400px;">
+                <option value="" selected></option>
+                <option value="Sim">Sim</option>
+                <option value="Não">Não</option>
+            </select>
+        </div>
+
+        <div id="canvas-wrapper" class="w-100" style="overflow-x: auto;">
+            <canvas id="canvas_altas_x_transferencia" class="canvas-grafico-tela-toda" style="width: 100%; max-height: 500px;"></canvas>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------        Altas x Transferência           -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->        
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------           Previsões de Alta            -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <style>
+        #tbPrevisoesDeAlta thead th {
+            border-top: 1px solid #dee2e6 !important; /* cor padrão Bootstrap */
+        }    
+
+        /* Borda arredondada e sombra leve na tabela */
+        #tbPrevisoesDeAlta {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Cabeçalho com fundo suave */
+        #tbPrevisoesDeAlta thead {
+            background-color: #f0f8ff;
+        }
+
+        /* Cabeçalho com texto em negrito */
+        #tbPrevisoesDeAlta thead th {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+            vertical-align: middle;
+            padding: 12px 8px;
+        }
+
+        /* Células do corpo da tabela */
+        #tbPrevisoesDeAlta tbody td {
+            font-size: 0.9rem;
+            padding: 10px 8px;
+            color: #444;
+        }
+
+        /* Linhas alternadas com cor de fundo clara */
+        #tbPrevisoesDeAlta tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Hover com destaque sutil */
+        #tbPrevisoesDeAlta tbody tr:hover {
+            background-color: #e9f5ff;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        /* Centralização garantida */
+        .text-center {
+            text-align: center;
+        }
+
+        /* Estilo para colunas específicas, se desejar customizar mais */
+        .medico {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .altas_com_previsao {
+            color: #2d862d;
+        }
+
+        .precisao_alta {
+            color: #1e90ff;
+        }        
+    </style>
+
+    <div id='dashboard_previsoes_de_alta' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Previsões de Alta</i></b></span>
+        </div>
+        <br>
+        
+        <div class="row">
+            <div class="col-md-1"></div>
+            <div class="col-md-7">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle text-center shadow rounded" id="tbPrevisoesDeAlta">
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="medico text-center">👩‍⚕️ Médico(a)</th>
+                                <th class="altas_com_previsao text-center">📈 % Altas com Previsão</th>
+                                <th class="precisao_alta text-center">🎯 Precisão da Alta</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for previsao_de_alta in previsoes_de_alta %}
+                            <tr>
+                                <td class="medico text-center">{{ previsao_de_alta.medico }}</td>
+                                <td class="altas_com_previsao text-center">{{ previsao_de_alta.altas_com_previsao }}</td>
+                                <td class="precisao_alta text-center">{{ previsao_de_alta.precisao_alta }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card shadow-sm p-4 mb-4 bg-white rounded-4 border-0">
+                    <h5 class="text-center mb-4 text-primary fw-semibold">
+                        <i class="fas fa-info-circle me-2"></i>Média do Período
+                    </h5>
+                    <div class="row mb-4 text-center">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="periodo_altas_com_previsao">
+                                % Altas com Previsão</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold" id="periodo_altas_com_previsao"
+                                disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="periodo_precisao">
+                                Precisão</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold" id="periodo_precisao"
+                                disabled>
+                        </div>
+                    </div>
+                    <br><br>
+                    <h5 class="text-center mb-4 text-primary fw-semibold">
+                        <i class="fas fa-info-circle me-2"></i>Acumulado de Janeiro ao Mês Passado
+                    </h5>
+                    <div class="row mb-4 text-center">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="acumulado_ano_altas_com_previsao">
+                                % Altas com Previsão</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold"
+                                id="acumulado_ano_altas_com_previsao" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold text-secondary" for="acumulado_ano_precisao">
+                                Precisão</label>
+                            <input type="text" class="form-control text-center bg-light fw-bold"
+                                id="acumulado_ano_precisao" disabled>
+                        </div>
+                        <div class="col-md-1"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------           Previsões de Alta            -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->        
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------      Tempos de Permanência na MH       -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_tempos_de_permanencia_mh' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Tempos de Permanência na MH</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row mb-3 w-100 justify-content-center">
+            <div class="d-flex gap-2 justify-content-center align-items-center">
+                <label for="profissional_tempos_de_permanencia_mh" class="mb-0"><b>Médico</b></label>
+                <select class="form-select form-select-sm" id="profissional_tempos_de_permanencia_mh" name="profissional_tempos_de_permanencia_mh"
+                    style="max-width: 400px;">
+                    <option value="" selected></option>
+                    {% for medico in medicos %}
+                    <option value="{{ medico.id }}">Dr(a) {{ medico }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div id="canvas-wrapper" class="w-100" style="overflow-x: auto;">
+            <canvas id="canvas_tempos_de_permanencia_mh" class="canvas-grafico-tela-toda" style="width: 100%; max-height: 500px;"></canvas>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------      Tempos de Permanência na MH       -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->        
+
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------                INÍCIO                  -------------------------->
+    <!--------------------------         Tempos de Permanência          -------------------------->
+    <!-------------------------------------------------------------------------------------------->
+    <div id='dashboard_tempos_de_permanencia' class="painel col-md-12 justify-content-center" style="display: none;">
+        <br>
+        <div class="position-relative w-100" style="height: 40px;">
+            <span class="position-absolute start-50 top-50 translate-middle fs-3"><b><i>Tempos de Permanência</i></b></span>
+        </div>
+
+        <div id="loading-spinner-admissoes" class="text-center my-3" style="display: none;">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando...</span>
+            </div>
+            <p class="mt-2">Carregando dados do gráfico...</p>
+        </div>
+        <br>
+
+        <div class="row mb-3 w-100 justify-content-center">
+            <div class="d-flex gap-2 justify-content-center align-items-center">
+                <label for="comanejo_tempos_de_permanencia" class="mb-0"><b>Comanejo</b></label>
+                <select class="form-select form-select-sm flex-grow-1" id="comanejo_tempos_de_permanencia"
+                    name="comanejo_tempos_de_permanencia" style="max-width: 400px;">
+                    <option value="" selected></option>
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                </select>
+            </div>
+        </div>
+        <div id="canvas-wrapper" class="w-100" style="overflow-x: auto;">
+            <canvas id="canvas_tempos_de_permanencia" class="canvas-grafico-tela-toda" style="width: 100%; max-height: 500px;"></canvas>
+        </div>
+        <div class="card shadow-sm p-4 mb-4 bg-white rounded-4 border-0">
+            <h5 class="text-center mb-4 text-primary fw-semibold">
+                <i class="fas fa-info-circle me-2"></i>Resumo da Sessão
+            </h5>
+            <div class="row mb-4 text-center">
+                <div class="col-md-1"></div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-secondary" for="admitidos_no_periodo">
+                        Admitidos no período</label>
+                    <input type="text" class="form-control text-center bg-light fw-bold" id="admitidos_no_periodo"
+                        disabled>
+
+                    <label class="form-label fw-semibold text-secondary" for="admitidos_em_loga_permanencia">
+                        Admitidos (em longa permanência)</label>
+                    <input type="text" class="form-control text-center bg-light fw-bold" id="admitidos_em_loga_permanencia"
+                        disabled>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold text-secondary" for="media_geral_tempo_permanencia">
+                        Média Geral do tempo (dias) de Permanência</label>
+                    <input type="text" class="form-control text-center bg-light fw-bold"
+                        id="media_geral_tempo_permanencia" disabled>
+                    <label class="form-label fw-semibold text-secondary" for="media_pacientes_loga_permanencia">
+                        Média para pacientes em Longa Permanência (dias)</label>
+                    <input type="text" class="form-control text-center bg-light fw-bold"
+                        id="media_pacientes_loga_permanencia" disabled>
+                    <label class="form-label fw-semibold text-secondary" for="media_pacientes_nao_longa_permanencia">
+                        Média para pacientes que NÃO estão em Longa Permanência (dias)</label>
+                    <input type="text" class="form-control text-center bg-light fw-bold"
+                        id="media_pacientes_nao_longa_permanencia" disabled>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+        </div>
+    </div>
+    <!-------------------------------------------------------------------------------------------->
+    <!--------------------------         Tempos de Permanência          -------------------------->
+    <!--------------------------                  FIM                   -------------------------->
+    <!-------------------------------------------------------------------------------------------->        
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="{%static 'js/dashboard.js'%}"></script>
+
+{%endblock conteudo%}

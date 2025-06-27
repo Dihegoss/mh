@@ -1,0 +1,121 @@
+header.fixed-top {
+    z-index: 1051;
+    /* Certifique-se de que seja maior que o z-index do card ou da div */
+}
+
+.dropdown-menu {
+    z-index: 1050;
+    /* Deve ser maior que o header */
+    display: none;
+    /* Esconde o menu por padrão */
+    opacity: 0;
+    /* Torna o menu invisível */
+    visibility: hidden;
+    /* Previne cliques indesejados */
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Apenas exibe o submenu de "Listagens" ao passar o mouse sobre o item "Listagens" */
+.nav-item.dropdown:hover>.dropdown-menu {
+    display: block;
+    /* Exibe o menu */
+    opacity: 1;
+    /* Torna visível */
+    visibility: visible;
+    /* Garante a interatividade */
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%; /* Para aparecer à direita */
+    margin-top: -5px;
+}
+
+/* Hover nos links */
+.nav-link:hover {
+    background-color: #1a9cde;
+    /* Cor de fundo ao passar o mouse */
+    color: #fff;
+    /* Cor do texto ao passar o mouse */
+    border-radius: 5px;
+    /* Deixa os cantos arredondados (opcional) */
+}
+
+.header-logo {
+    background-color: #1a9cde;
+    padding: 10px 0;
+}
+
+.logo {
+    max-height: 90px;
+}
+
+.header-sec1 {
+    color: white;
+    font-size: 25px;
+}
+
+.header-menu {
+    background-color: #e5fbff;
+    /* Cor de fundo do menu */
+    padding: 10px 0;
+}
+
+.nav-link i {
+    display: inline-block;
+    /* Garante que o ícone seja tratado como inline */
+    vertical-align: middle;
+    /* Alinha o ícone verticalmente com o texto */
+    margin-right: 5px;
+    /* Espaçamento entre o ícone e o texto */
+}
+
+.nav-link {
+    display: inline-flex;
+    /* Garante que o texto e o ícone fiquem na mesma linha */
+    align-items: center;
+    /* Centraliza verticalmente o texto e o ícone */
+}
+
+.texto-transform-3d {
+    font-size: 3rem;
+    font-weight: bold;
+    color: pink;
+    text-shadow:
+        3px 3px 0px #000000,
+        6px 6px 0px rgba(0, 0, 0, 0.5);
+    transform: rotateX(0deg) rotateY(20deg);
+    display: inline-block;
+}
+
+.logo-barra {
+    max-height: 50px;
+    /* Ajusta a altura máxima */
+    width: auto;
+    /* Mantém a proporção da imagem */
+    margin: 0 auto;
+    /* Centraliza se necessário */
+}
+
+@media (max-width: 768px) {
+
+    #logo_esquerda,
+    #logo_direita {
+        display: none !important;
+    }
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0.55);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.img-animada {
+    animation: aparecer 1s ease forwards;
+}

@@ -1,0 +1,338 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+<style>
+    .separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #1a9cde;
+    }
+
+    .separator::before,
+    .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 2px solid #1a9cde;
+    }
+
+    .separator::before {
+    margin-right: .25em;
+    }
+
+    .separator::after {
+    margin-left: .25em;
+    }    
+</style>
+
+<div class="container mt-3 rounded shadow border-0">
+    <br>
+    <form id="formCargaDados" action="{% url 'executar_carga' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="separator">Carga Pendências</div>
+        <div class="row mb-3">
+            <div class="col-md-1"></div>
+            <div class="col-md-7">
+                <label for="estabelecimento" class="form-label"><b>Estabelecimento</b></label>
+                <select class="form-select form-select-sm" id="estabelecimento" name="estabelecimento">
+                    <option value="" selected></option>
+                    {% for estabelecimento in estabelecimentos %}
+                        <option value="{{ estabelecimento.id }}">{{estabelecimento.sigla}} - {{estabelecimento}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="excluir_dados_existentes" class="form-label"><b>Excluir os dados existentes</b></label>
+                <select class="form-select form-select-sm" id="excluir_dados_existentes" name="excluir_dados_existentes">
+                    <option value="" selected></option>
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                </select>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-1"></div>
+            <div class="col-md-10 d-flex align-items-center gap-2">
+                <label class="form-label"><b>Arquivo para carga das pendências</b></label>
+                <label for="arquivo_entrada" class="custom-file-upload btn btn-primary btn-sm d-inline-block">Escolher arquivo</label>
+                <input type="file" id="arquivo_entrada" name="arquivo_entrada" accept=".xlsx, .xls" style="display: none;" onchange="ArquivoDeCarga()">
+                <p id="nomeArquivoDeCarga" class="mb-0"></p>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-8"></div>
+            <div class="col-md-3">
+                <button type="button" class="btn custom_01-btn btn btn-block btn-sm w-100" onclick="CarregarPendencias()"><i class="fas fa-upload"></i> Carregar pendências</button>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <br>
+
+        <div class="separator">Carga CID</div>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-1"></div>
+            <div class="col-md-3 d-flex align-items-center gap-2">
+                <label for="excluir_cids" class="form-label mb-0 flex-shrink-0"><b>Excluir CIDs existentes:</b></label>
+                <select class="form-select form-select-sm flex-grow-1" id="excluir_cids" name="excluir_cids">
+                    <option value="" selected></option>
+                    <option value="Sim">Sim</option>
+                    <option value="Não">Não</option>
+                </select>
+            </div>
+            <div class="col-md-7 align-items-center gap-2">
+                <label class="form-label"><b>Arquivo para carga do CID</b></label>
+                <label for="arquivo_entrada_cid" class="custom-file-upload btn btn-primary btn-sm">Escolher arquivo</label>
+                <input type="file" id="arquivo_entrada_cid" name="arquivo_entrada_cid" accept=".xlsx, .xls" style="display: none;" onchange="ArquivoDeCargaCID()">
+                <p id="nomeArquivoDeCargaCID" class="mb-0"></p>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <br>
+        <div class="row mb-3">
+            <div class="col-md-8"></div>
+            <div class="col-md-3">
+                <button type="button" class="btn custom_01-btn btn btn-block btn-sm w-100" onclick="CarregarCID()"><i class="fas fa-upload"></i> Carregar CID</button>
+            </div>
+            <div class="col-md-1"></div>
+        </div>
+        <br>
+
+    </form>
+</div>
+
+
+<script>
+    // Função para obter o CSRF Token
+    function getCSRFToken() {
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        return csrfToken;
+    }
+
+    function ArquivoDeCarga() {
+        // Captura o input de arquivo
+        var arquivo = document.getElementById('arquivo_entrada').files[0];
+
+        // Exibe o nome do arquivo no parágrafo com o id 'nomeArquivoDeCarga'
+        if (arquivo) {
+            document.getElementById('nomeArquivoDeCarga').textContent = arquivo.name;
+        } else {
+            document.getElementById('nomeArquivoDeCarga').textContent = '';
+        }
+    }    
+
+    function ArquivoDeCargaCID() {
+        // Captura o input de arquivo
+        var arquivo = document.getElementById('arquivo_entrada_cid').files[0];
+
+        // Exibe o nome do arquivo no parágrafo com o id 'nomeArquivoDeCarga'
+        if (arquivo) {
+            document.getElementById('nomeArquivoDeCargaCID').textContent = arquivo.name;
+        } else {
+            document.getElementById('nomeArquivoDeCargaCID').textContent = '';
+        }
+    }       
+
+    function CarregarPendencias(){
+        // Verifica se todos os campos estão preenchidos corretamente
+        const estabelecimentoSelect = document.getElementById('estabelecimento');
+        const id_estabelecimento = estabelecimentoSelect.value;
+        const excluir_dados_existentesSelect = document.getElementById('excluir_dados_existentes');
+        const id_excluir_dados_existentes = excluir_dados_existentesSelect.value;
+        const arquivo_entrada = document.getElementById('arquivo_entrada').files[0];
+
+        if (!id_estabelecimento) {
+            focusCampo('estabelecimento');
+            Swal.fire({
+                title: c_App,
+                text: 'Informe o estabelecimento',
+                icon: "error",
+            });
+            return;
+        }
+
+        if (!id_excluir_dados_existentes) {
+            focusCampo('excluir_dados_existentes');
+            Swal.fire({
+                title: c_App,
+                text: 'Informe se deseja ou não excluir os dados existentes no banco de dados',
+                icon: "error",
+            });
+            return;
+        }
+
+        if (!arquivo_entrada) {
+            focusCampo('arquivo_entrada');
+            Swal.fire({
+                title: c_App,
+                text: 'Selecione o arquivo para carga dos dados',
+                icon: "error",
+            });
+            return;
+        }
+
+        // Exibir Swal para aguardar enquanto os dados são carregados
+        Swal.fire({
+            title: 'Aguarde...',
+            text: 'Carregando dados',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Criar o FormData para enviar os dados
+        const formData = new FormData();
+        formData.append('estabelecimento', id_estabelecimento);
+        formData.append('excluir_dados_existentes', id_excluir_dados_existentes);
+        formData.append('arquivo_entrada', arquivo_entrada);
+
+        // Enviar os dados para a rota usando Fetch
+        fetch("{% url 'executar_carga' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken() // Adiciona o token CSRF no cabeçalho
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                return response.json();
+            } else {
+                throw new Error("Resposta inesperada do servidor.");
+            }
+        })
+        .then(data => {
+            Swal.close();
+            if (data.status === 'sucesso') {
+                Swal.fire({
+                    title: 'Sucesso',
+                    text: 'Dados carregados com sucesso!',
+                    icon: 'success',
+                });
+            } else if (data.status === 'parcial') {
+                window.location.href = data.arquivo_erros; // Faz o download do arquivo
+                Swal.fire({
+                    title: 'Carga concluída com erros!',
+                    text: 'Arquivo de erro baixado',  // Exibe o diretório onde o arquivo foi salvo
+                    icon: 'warning',
+                    confirmButtonText: 'Ok'
+                }).then(() => {
+                    window.location.href = '';
+                });
+            } else if (data.status === 'error') {
+                Swal.fire({
+                    title: 'Erro',
+                    text: data.message,
+                    icon: 'error',
+                });
+            } else {
+                throw new Error("Resposta inesperada do servidor.");
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                title: 'Erro',
+                text: error.message,
+                icon: 'error',
+            });
+        });
+    };
+
+    function CarregarCID(){
+        // Verifica se todos os campos estão preenchidos corretamente
+        const excluir_cidsSelect = document.getElementById('excluir_cids');
+        const id_excluir_cids = excluir_cidsSelect.value;
+        const arquivo_entrada_cid = document.getElementById('arquivo_entrada_cid').files[0];
+
+        if (!id_excluir_cids) {
+            focusCampo('id_excluir_cids');
+            Swal.fire({
+                title: c_App,
+                text: 'Informe se deseja ou não excluir CIDs',
+                icon: "error",
+            });
+            return;
+        }
+
+        if (!arquivo_entrada) {
+            focusCampo('arquivo_entrada_cid');
+            Swal.fire({
+                title: c_App,
+                text: 'Selecione o arquivo para carga do CID',
+                icon: "error",
+            });
+            return;
+        }
+
+        // Exibir Swal para aguardar enquanto os dados são carregados
+        Swal.fire({
+            title: 'Aguarde...',
+            text: 'Carregando dados CID',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        // Criar o FormData para enviar os dados
+        const formData = new FormData();
+        formData.append('excluir_cids', id_excluir_cids);
+        formData.append('arquivo_entrada_cid', arquivo_entrada_cid);
+
+        // Enviar os dados para a rota usando Fetch
+        fetch("{% url 'executar_carga_cid' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCSRFToken() // Adiciona o token CSRF no cabeçalho
+            },
+            body: formData,
+        })
+        .then(response => {
+            if (response.headers.get("content-type")?.includes("application/json")) {
+                return response.json();
+            } else {
+                throw new Error("Resposta inesperada do servidor.");
+            }
+        })
+        .then(data => {
+            Swal.close();
+            if (data.status === 'sucesso') {
+                Swal.fire({
+                    title: 'Sucesso',
+                    text: 'Dados carregados com sucesso!',
+                    icon: 'success',
+                });
+            } else if (data.status === 'parcial') {
+                window.location.href = data.arquivo_erros; // Faz o download do arquivo
+                Swal.fire({
+                    title: 'Carga concluída com erros!',
+                    text: 'Arquivo de erro baixado',  // Exibe o diretório onde o arquivo foi salvo
+                    icon: 'warning',
+                    confirmButtonText: 'Ok'
+                }).then(() => {
+                    window.location.href = '';
+                });
+            } else {
+                throw new Error("Resposta inesperada do servidor.");
+            }
+        })
+        .catch(error => {
+            Swal.close();
+            Swal.fire({
+                title: 'Erro',
+                text: 'Ocorreu erro ao carregar os dados',
+                icon: 'error',
+            });
+        });
+
+
+    };
+</script>
+
+{%endblock conteudo%}

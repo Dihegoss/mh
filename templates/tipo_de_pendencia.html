@@ -1,0 +1,94 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/tipo_de_pendencia.css'%}" />
+
+<div class="container mt-3 rounded shadow border-0">
+    <div class="container-fluid mt-2 card rounded shadow border-2">
+        <br>
+        <form id="form_tipo_de_pendencia" method="post">
+            {%csrf_token%}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="tipo_de_pendencia" class="form-label"><b>Tipo de pendência</b></label>
+                    <select class="form-select form-select-sm" id="tipo_de_pendencia" name="tipo_de_pendencia" required>
+                        <option value="" selected></option>
+                        {%for tipo_de_pendencia in tipo_de_pendencias%}
+                            <option value="{{tipo_de_pendencia.id}}">{{tipo_de_pendencia.conteudo}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="pendencia" class="form-label"><b>Pendência</b></label>
+                    <input class="form-control form-control-sm" type="text" id="pendencia" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2 d-flex justify-content-end">
+                    <button class="btn custom_01-btn btn btn-block btn-sm" type="button" onclick="adicionarTipo_de_Pendencia()"><i
+                            class="fa fa-arrow-circle-down"></i> Adicionar</button>
+                </div>
+            </div>
+        </form>
+        <br>
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table class="table table-bordered table-hover custom-table_02" id="tbTipo_de_Pendencias">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id_pendencia</th>
+                        <th style="display:none;">id_tipo_pendencia</th>
+                        <th class="tipo_de_pendencia text-center">Tipo de pendência</th>
+                        <th class="pendencia text-center">Pendência</th>
+                        <th class="ativo text-center">Ativo</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for pendencia in pendencias%}
+                    <tr>
+                        <td class="id_pendencia" style="display:none;">{{pendencia.id}}</td>
+                        <td class="id_tipo_de_pendencia" style="display:none;">{{pendencia.id_tp_pendencia.id}}</td>
+                        <td class="tipo_de_pendencia text-center">{{pendencia.id_tp_pendencia}}</td>
+                        <td class="pendencia text-center">{{pendencia.pendencia}}</td>
+                        <td class="ativo text-center">
+                            {%if pendencia.ativo == True%}
+                                <input type="checkbox" class="form-check-input" disabled checked>
+                            {%else%}
+                                <input type="checkbox" class="form-check-input" disabled>
+                            {%endif%}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn custom_02-btn btn-sm btn-edit"
+                                onclick="editRowTipo_de_Pendencia(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRowTipo_de_Pendencia(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const tipo_de_pendenciaInserirUrl = "{% url 'tipo_de_pendencia_inserir' %}";
+    const tipo_de_pendenciaAtualizarUrl = "{% url 'tipo_de_pendencia_atualizar' %}";
+    const tipo_de_pendenciaExcluirUrl = "{% url 'tipo_de_pendencia_excluir' %}";
+    const obterTPs = "{% url 'obterTPs' %}";
+</script>
+
+<script src="{%static 'js/tipo_de_pendencia.js'%}"></script>
+
+{%endblock conteudo%}

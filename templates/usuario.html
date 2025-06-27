@@ -1,0 +1,130 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/usuario.css'%}" />
+
+<div class="container-fluid mt-3 rounded shadow border-0">
+    <div class="container-fluid mt-2 card rounded shadow border-2">
+        <br>
+        <form id="formUsuario" method="post">
+            {%csrf_token%}
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="nome" class="form-label"><b>Nome</b></label>
+                    <input class="form-control form-control-sm" type="text" id="nome" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="cpf" class="form-label"><b>CPF</b></label>
+                    <input class="form-control form-control-sm" type="text" id="cpf" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="perfil" class="form-label"><b>Perfil</b></label>
+                    <select class="form-select form-select-sm" id="perfil" name="perfil" required>
+                        <option value="" disabled selected hidden></option>
+                        {%for chave, conteudo in perfis_usuario.items%}
+                        <option value="{{chave}}">{{conteudo}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="estabelecimento" class="form-label"><b>Estabelecimento</b></label>
+                    <select class="form-select form-select-sm" id="estabelecimento" name="estabelecimento" required>
+                        <option value="" disabled selected hidden></option>
+                        {%for estabelecimento in estabelecimentos%}
+                        <option value="{{estabelecimento.id}}">{{estabelecimento.nome}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <label for="ativo" class="form-label"><b>Ativo</b></label>
+                    <select class="form-select form-select-sm" id="ativo" name="ativo" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2 d-flex justify-content-end">
+                    <button class="btn custom_01-btn btn btn-block btn-sm" type="button" onclick="adicionarUsuario()"><i
+                            class="fa fa-arrow-circle-down"></i> Adicionar</button>
+                </div>
+            </div>
+        </form>
+        <br>
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table class="table table-bordered table-hover custom-table_02" id="tbUsuarios">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id_usuario</th>
+                        <th class="Nome">Nome</th>
+                        <th class="cpf text-center">CPF</th>
+                        <th class="perfil text-center">Perfil</th>
+                        <th class="estabelecimento text-center">Estabelecimento</th>
+                        <th class="termo_uso text-center">Termo de uso</th>
+                        <th class="ativo text-center">Ativo</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for usuario in usuarios%}
+                    {%if usuario.id_pessoa.nome != 'Migração'%}
+                    <tr>
+                        <td class="id_usuario" style="display:none;">{{usuario.id}}</td>
+                        <td class="nome">{{usuario.id_pessoa.nome}}</td>
+                        <td class="cpf text-center">
+                            {{usuario.id_pessoa.cpf|slice:":3"}}.{{usuario.id_pessoa.cpf|slice:"3:6"}}.{{usuario.id_pessoa.cpf|slice:"6:9"}}-{{usuario.id_pessoa.cpf|slice:"9:"}}  
+                        </td>                      
+                        <td class="perfil text-center">{{usuario.perfil}}</td>
+                        <td class="estabelecimento text-center">{{usuario.id_estabelecimento}}</td>
+                        <td class="termo_uso text-center">
+                            {%if usuario.termo_uso == True%}
+                            <input type="checkbox" class="form-check-input" disabled checked>
+                            {%else%}
+                            <input type="checkbox" class="form-check-input" disabled>
+                            {%endif%}
+                        </td>
+                        <td class="ativo text-center">
+                            {%if usuario.ativo == True%}
+                            <input type="checkbox" class="form-check-input" disabled checked>
+                            {%else%}
+                            <input type="checkbox" class="form-check-input" disabled>
+                            {%endif%}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn custom_02-btn btn-sm btn-edit"
+                                onclick="editRowUsuario(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRowUsuario(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {%endif%}
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const usuarioInserirUrl = "{% url 'usuario_inserir' %}";
+    const usuarioAtualizarUrl = "{% url 'usuario_atualizar' %}";
+    const usuarioExcluirUrl = "{% url 'usuario_excluir' %}";
+    const obterPerfisUsuario = "{% url 'obter_perfis_usuario' %}";
+    const obterEstabelecimentos = "{% url 'obter_estabelecimentos' %}";
+</script>
+
+<script src="{%static 'js/usuario.js'%}"></script>
+
+{%endblock conteudo%}

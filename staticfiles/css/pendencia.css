@@ -1,0 +1,93 @@
+.separator {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  color: #1a9cde;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px solid #1a9cde;
+}
+
+.separator::before {
+  margin-right: .25em;
+}
+
+.separator::after {
+  margin-left: .25em;
+}
+
+.input-container {
+  position: relative;
+  width: 100%; /* Ajusta a largura para o tamanho do contêiner */
+}
+
+.form-control-sm {
+  width: 100%;
+  padding-right: 50px; /* Garantir que o semáforo tenha espaço à direita */
+  box-sizing: border-box;
+  height: 30px;
+  font-size: 14px;
+}
+
+.semaforo {
+  position: absolute;
+  top: 0; /* Ajuste o semáforo para aparecer no topo do input */
+  right: 10px; /* Mantém o semáforo à direita do input */
+  display: flex;
+  flex-direction: row;
+  gap: 5px; /* Aumenta o espaço entre as luzes */
+}
+
+.light {
+  width: 20px; /* Ajuste o tamanho das luzes */
+  height: 20px; /* Ajuste o tamanho das luzes */
+  border-radius: 50%;
+  background-color: grey;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.5s ease;
+}
+
+.dias-internacao-bg-green {
+    background-color: rgb(117, 220, 79);
+}
+
+.dias-internacao-bg-yellow {
+    background-color: rgb(209, 209, 49)
+}
+
+.dias-internacao-bg-red {
+    background-color: rgb(243, 90, 90);
+}
+
+.highlight-field {
+    background-color: #7ebdf8; /* Amarelo claro */
+    border: 2px solid #5c5ed3; /* Borda mais visível */
+    border-radius: 5px;        /* Borda arredondada */
+    padding: 10px;             /* Espaçamento interno */
+}
+
+.highlight-field label {
+    font-weight: bold;         /* Negrito no texto do rótulo */
+    color: #333;               /* Cor do texto */
+}
+
+.highlight-field input {
+    border: 2px solid #5c5ed3; /* Destaque na borda do input */
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5); /* Sombra amarela */
+}
+
+input:required,
+textarea:required,
+select:required {
+  border: 2px solid #f7a4a2; /* Borda vermelha para destacar */
+}
+
+input:required:valid,
+textarea:required:valid,
+select:required:valid {
+  border: 1px solid #ccc; /* Borda padrão para campos preenchidos */
+}

@@ -1,0 +1,134 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/pendencia_listar.css'%}" />
+
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+
+<!--
+Fonte: https://codepen.io/creativetim/pen/OePrJO
+-->
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <div class="card shadow">
+                <div class="filtro row mt-3 mb-3">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center">
+                        Filtro:
+                    </div>                    
+                    <div class="col-md-2">
+                        <div class="d-flex mt-2">
+                            <!-- Filtro de Paciente -->
+                            <div class="form-floating">
+                                <input type="text" id="filterPaciente" class="form-control form-control-sm" placeholder="Filtrar por paciente">
+                                <label for="filterPaciente">Paciente</label>
+                            </div>
+                        </div>                        
+                    </div>
+                    <div class="col-md-2">
+                        <div class="d-flex mt-2">
+                            <!-- Filtro de Médico -->
+                            <div class="form-floating">
+                                <select id="filterMedico" class="form-control form-control-sm">
+                                    <option value=""></option>
+                                    <!-- Médicos serão preenchidos dinamicamente via JavaScript -->
+                                </select>
+                                <label for="filterMedico">Médico</label>
+                            </div>
+                        </div>                          
+                    </div>
+                    <div class="col-md-2">
+                        <div class="d-flex mt-2">
+                            <!-- Filtro de Enfermeiro -->
+                            <div class="form-floating">
+                                <select id="filterEnfermeiro" class="form-control form-control-sm">
+                                    <option value=""></option>
+                                    <!-- Enfermeiros serão preenchidos dinamicamente via JavaScript -->
+                                </select>
+                                <label for="filterEnfermeiro">Enfermeiro</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="d-flex mt-2">
+                            <!-- Filtro de Pendência -->
+                            <div class="form-floating">
+                                <select id="filterPendencia" class="form-control form-control-sm">
+                                    <option value=""></option>
+                                    <!-- Pendências serão preenchidas dinamicamente via JavaScript -->
+                                </select>
+                                <label for="filterPendencia">Estabelecimento</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-1">
+                    </div>   
+                    <br><br><br>                  
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-items-center table-flush table-hover" id="tbPendencias">
+                        <thead class="thead-light">
+                            <tr>
+                                <th scope="col" class="text-center" style="display:none;">Pendencia</th>
+                                <th scope="col" class="text-center">Paciente</th>
+                                <th scope="col" class="text-center">Atendimento</th>
+                                <th scope="col" class="text-center">Dias de Internação</th>
+                                <th scope="col" class="text-center">Previsão de alta</th>
+                                <th scope="col" class="text-center">Médico(a)</th>
+                                <th scope="col" class="text-center">Enfermeiro(a)</th>
+                                <th scope="col" class="text-center">Estabelecimento</th>
+                                <!--<th scope="col" class="text-center">Ação</th>-->
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            {%for pendencia in pendencias%}
+                            <tr title="{{pendencia.ultimo_acompanhamento}}" onclick="editRowPendencia(this)">
+                                <td class="id_pendencia text-center" style="display:none;">{{pendencia.id}}</td>
+                                <th scope="row" class="id_paciente text-center">{{pendencia.id_paciente}}</th>
+                                <td class="nr_atendimento_mv text-center">{{pendencia.nr_atendimento_mv}}</td>
+                                <td class="semaforo text-center">
+                                    <div class="input-container">
+                                        <div class="semaforo">
+                                            <label id="dias_internacao_label" class="small mb-0"><b>{{pendencia.dias_de_internacao_hospitalar}}</b></label>
+                                            <div class="light {% if pendencia.semaforo_internacao_hospitalar == 'red' %}red{% endif %}" id="red-light"></div>
+                                            <div class="light {% if pendencia.semaforo_internacao_hospitalar == 'yellow' %}yellow{% endif %}" id="yellow-light"></div>
+                                            <div class="light {% if pendencia.semaforo_internacao_hospitalar == 'green' %}green{% endif %}" id="green-light"></div>                                            
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="dt_previsao_alta text-center">{{pendencia.dt_previsao_alta}}</td>
+                                <td class="id_medico text-center">{{pendencia.id_medico}}</td>
+                                <td class="id_enfermeiro text-center">{{pendencia.id_enfermeiro}}</td>
+                                <td class="sigla_estabelecimento text-center">{{pendencia.id_estabelecimento.sigla}}</td>
+                                <!--<td class="text-center"><button type="button" class="btn custom_02-btn btn-sm btn-edit" onclick="editRowPendencia(this)"><i class="fas fa-edit"></i></button></td>-->
+                            </tr>
+                            {%endfor%}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer py-4">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-end mb-0" id="pagination">
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="alert alert-danger" role="alert">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+    </div>
+{% endif %}
+
+<script src="{%static 'js/pendencia_listar.js'%}"></script>
+
+{%endblock conteudo%}

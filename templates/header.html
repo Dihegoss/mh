@@ -1,0 +1,143 @@
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/header.css'%}" />
+
+<header class="fixed-top">
+    <div class="header-logo">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-4 d-flex justify-content-start" id="logo_esquerda">
+                    <a href="https://icepi.es.gov.br/" target="_blank"><img src="{%static 'img/icepi.png'%}"
+                            alt="Logo Left" class="img-fluid logo"></a>
+                </div>
+                <div class="col-md-4 text-center" id="titulo">
+                    <!-- <img src="{% static 'img/MHDigital_03.png' %}" class="logo-barra img-fluid"> -->
+                     <img src="{% static 'img/MHDigital_03.png' %}" class="img-animada logo-barra img-fluid" id="logo-img">
+                </div>
+                <div class="col-md-4 d-flex justify-content-end" id="logo_direita">
+                    <a href="https://www.gov.br/saude/pt-br/sus" target="_blank"><img src="{%static 'img/sus.png'%}"
+                            alt="Logo Right 2" class="img-fluid logo"></a>
+                    <a href="https://saude.es.gov.br/" target="_blank"><img src="{%static 'img/brasao_es.png'%}"
+                            alt="Logo Right 2" class="img-fluid logo"></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-menu">
+        <div class="container-fluid">
+            <div class="row align-items-center">
+                <div class="col-md-5 d-flex">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <!-- Menu hamburguer -->
+                        <div class="container-fluid">
+                            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown"
+                                aria-expanded="false" aria-label="Toggle navigation">
+                                <span class="navbar-toggler-icon"></span>
+                            </button>
+                        </div>
+
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href='{% url "home" %}'><i class="fa-solid fa-house"></i>
+                                        Início</a>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="pendenciaDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa-solid fa-tasks"></i> Pendência
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="pendenciaDropdown">
+                                        {%if perfil_usuario_logado != perfis_usuario.GestorICEPiVisualizador%}
+                                        <li><a class="dropdown-item" href='{% url "pendencia_criar" %}'>Criar</a></li>
+                                        {%endif%}
+                                        <li class="nav-item dropdown-submenu dropdown">
+                                            <a class="dropdown-item dropdown-toggle" href="#" id="listagensDropdown" data-bs-toggle="dropdown" aria-expanded="false">Listar</a>
+                                            <ul class="dropdown-menu" aria-labelledby="listagensDropdown">
+                                                
+                                                {%if perfil_usuario_logado != perfis_usuario.GestorICEPiVisualizador and perfil_usuario_logado != "Visualizador Estabelecimento"%}
+                                                <li><a class="dropdown-item" href="{% url 'pendencia_listar' %}?filtro=meus">Meus pacientes</a></li>
+                                                {%endif%}
+                                                <li><a class="dropdown-item" href="{% url 'pendencia_listar' %}?filtro=ativos">Todos pacientes ativos</a></li>
+                                                <li><a class="dropdown-item" href="{% url 'pendencia_listar' %}?filtro=todos">Todos pacientes</a></li>    
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="pendenciaConsultas" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-chart-bar"></i> Análises
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="pendenciaConsultas">
+                                        <li><a class="dropdown-item" href='{% url "dashboard2" %}' target="_blank" rel="noopener noreferrer">Painéis</a></li>
+                                        <li><a class="dropdown-item" href='#'>Relatórios</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </nav>
+                </div>
+                <div class="col-md-2 d-flex justify-content-center">
+                    <b>{{titulo_02}}</b>
+                </div>
+                <div class="col-md-5 d-flex justify-content-end">
+                    <nav class="navbar navbar-expand-lg navbar-light">
+                        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+                            <ul class="navbar-nav">
+                                {%if perfil_usuario_logado == perfis_usuario.Administrador or perfil_usuario_logado == perfis_usuario.GestorICEPi or perfil_usuario_logado == perfis_usuario.GestorEstabelecimento%}
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="pendenciaDropdown" role="button"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-cog"></i> Administração
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="pendenciaDropdown">
+                                        {%if perfil_usuario_logado == perfis_usuario.Administrador or perfil_usuario_logado == perfis_usuario.GestorICEPi%}
+                                        <li><a class="dropdown-item" href='{% url "subgrupo" %}'>SubGrupo</a></li>
+                                        <li><a class="dropdown-item" href='{% url "tipo_de_pendencia" %}'>Tipo de Pendência</a></li>
+                                        <li><a class="dropdown-item" href='{% url "unidade" %}'>Unidade</a></li>
+                                        <li><a class="dropdown-item" href='{% url "cid" %}'>CID</a></li>
+                                        <div class="dropdown-divider"></div>
+                                        <li><a class="dropdown-item" href='{% url "estabelecimento" %}'>Estabelecimento</a></li>
+                                        {%endif%}
+                                        <li><a class="dropdown-item" href='{% url "profissional" %}'>Profissional</a></li>
+                                        <li><a class="dropdown-item" href='{% url "usuario" %}'>Usuário</a></li>
+                                        {%if perfil_usuario_logado == perfis_usuario.Administrador%}
+                                        <div class="dropdown-divider"></div>
+                                        <li><a class="dropdown-item" href='{% url "carregar_dados" %}'>Carregar dados</a></li>
+                                        {%endif%}
+                                    </ul>
+                                </li>
+                                {%endif%}
+                                <li class="nav-item">
+                                    {%if perfil_usuario_logado == perfis_usuario.Administrador or perfil_usuario_logado == perfis_usuario.GestorICEPi or perfil_usuario_logado == perfis_usuario.GestorICEPiVisualizador%}
+                                        <span class="header-sec3 nav-link"><i class="fas fa-user"></i> {{apelido.split.0}} - {{perfil_usuario_logado}}</span>
+                                    {%else%}
+                                        {%if perfil_usuario_logado == perfis_usuario.GestorEstabelecimento%}
+                                        <span class="header-sec3 nav-link"><i class="fas fa-user"></i> {{apelido.split.0}} - {{sigla_estabelecimento}} - Gestor</span>
+                                        {%elif perfil_usuario_logado == perfis_usuario.OperadorEstabelecimento%}
+                                        <span class="header-sec3 nav-link"><i class="fas fa-user"></i> {{apelido.split.0}} - {{sigla_estabelecimento}} - Operador</span>
+                                        {%else%}
+                                        <span class="header-sec3 nav-link"><i class="fas fa-user"></i> {{apelido.split.0}} - {{sigla_estabelecimento}} - Visualizador</span>
+                                        {%endif%}
+                                    {%endif%}
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'logout_view' %}">Sair <i class="fas fa-sign-out-alt"></i></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</header>
+
+
+
+<script src="{%static 'js/header.js'%}"></script>

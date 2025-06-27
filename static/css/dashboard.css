@@ -1,0 +1,225 @@
+.canvas-grafico {
+    width: 100%;
+    max-width: 900px;
+    height: 400px;
+}
+
+.canvas-grafico-tela-toda {
+    width: 100%;
+    height: 400px;
+}
+
+#tabela_atendimentos_longa_permanencia tr {
+    cursor: pointer; /* Muda o cursor para a mãozinha ao passar sobre a linha */
+}
+
+/* Oculta a coluna ID na tabela */
+#tabela_atendimentos_longa_permanencia td:nth-child(1),
+#tabela_atendimentos_longa_permanencia th:nth-child(1) {
+    display: none;
+}
+
+input[type="date"] {
+    text-align: center;
+}
+
+.borda_01 {
+    border: 2px solid black;
+    padding: 10px;
+}
+
+.background_01 {
+    background-color: rgb(218, 238, 200);
+}
+
+/* DIV do filtro de seleção */
+#filtro {
+    background-color: #f8f9fa;
+    /* tom claro, neutro */
+    border-radius: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#filtro label {
+    font-size: 0.85rem;
+    color: #333;
+}
+
+#filtro select,
+#filtro input {
+    max-width: 100px;
+    margin: 0 auto;
+}
+
+.custom-aplicar {
+    font-weight: 600;
+    border-radius: 30px;
+    padding: 10px 24px;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.15);
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-aplicar:hover {
+    background-color: rgba(54, 162, 235, 0.6);
+    color: white;
+    border-color: #0d6efd;
+}
+
+.highlight-field-01 {
+    background-color: #e0f7e9;
+    border: 2px solid #70a6f7;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.highlight-field-01 label {
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 15px !important;
+    margin-bottom: 5px;
+    display: block;
+    text-align: center;
+}
+
+.highlight-field-01 input {
+    border: none;
+    background-color: #ffffff;
+    box-shadow: 0 0 8px rgba(91, 192, 222, 0.3);
+    font-size: 18px !important;
+    font-weight: bold;
+    text-align: center;
+    color: #2c3e50;
+    padding: 8px 10px;
+    border-radius: 6px;
+}
+
+.highlight-field-01 input:disabled {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* ===================== */
+/* 📱 Responsividade */
+/* ===================== */
+
+@media (max-width: 768px) {
+    #filtro {
+        position: static;
+        width: 100%;
+        padding: 1rem;
+        border-right: none;
+        border-bottom: 1px solid #ccc;
+    }
+
+    #filtro select,
+    #filtro input,
+    #filtro button {
+        max-width: 100% !important;
+        width: 100%;
+    }
+
+    #filtro h6 {
+        font-size: 1rem;
+    }
+
+    .highlight-field-01 {
+        margin-bottom: 1rem;
+    }
+
+    .highlight-field-01 input {
+        font-size: 0.9rem;
+    }
+
+    canvas {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    .row.text-center>.col-md-3 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .row.align-items-center.text-center.fs-3 {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .text-center.mb-3 {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .col-md-10 {
+        width: 100% !important;
+        padding: 0 0.5rem;
+    }
+
+    .row.align-items-center>.col-md-6 {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .fs-3 {
+        font-size: 1rem !important;
+    }
+}
+
+
+
+.zoom-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.zoom-controls button {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  font-size: 20px;
+  border: none;
+  background-color: #83adec;
+  color: white;
+  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.zoom-controls button:hover {
+  background-color: #4180df;
+  transform: scale(1.05);
+}
+
+.zoom-controls button:active {
+  transform: scale(0.95);
+}
+
+#canvas-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #ccc transparent;
+}
+
+@keyframes aparecer {
+    from {
+        opacity: 0;
+        transform: scale(0.55);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.img-animada {
+    animation: aparecer 1s ease forwards;
+}

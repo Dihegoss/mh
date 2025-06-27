@@ -1,0 +1,560 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/pendencia.css'%}" />
+
+<br>
+<div class="container-fluid mt-2 card rounded shadow border-2 table-responsive">
+    <br>
+    <form id="formPendencia" method="post">
+        {%csrf_token%}
+        <input type="hidden" id="id_pendencia_id" value="{{pendencia.id}}">
+        <input type="hidden" id="status_pendencia" value="{{pendencia.status}}">
+        <input type="hidden" id="dt_hr_criacao" value="{{pendencia.dt_hr_criacao}}">
+        <input type="hidden" id="so_visualizacao" value="{{so_visualizacao}}">
+
+        <div class="separator"><i class="fas fa-id-card fa-2x" style="color: #1a9cde; margin-right: 8px;"></i> Identificação</div>
+        <div class="row my-3">
+            <span style="display:none;" id="nr_cpf">{{pendencia.id_paciente.nr_cpf}}</span>
+            <span style="display:none;" id="nr_cns">{{pendencia.id_paciente.nr_cns}}</span>
+
+            <!-- Paciente: Coluna que ficará no topo em telas pequenas -->
+            <div class="col-12 col-md-4 text-center">
+                <label for="paciente_nome">Paciente: </label>
+                <h4><span id="paciente_nome">{{pendencia.id_paciente}}</span></h4>
+            </div>
+        
+            <!-- Outras informações -->
+            <div class="col-12 col-md-8">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label for="nr_atendimento_mv"><b>Atendimento:</b></label>
+                        <span id="nr_atendimento_mv">{{pendencia.nr_atendimento_mv}}</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <label for="nr_paciente_mv"><b>Código Paciente:</b></label>
+                        <span id="nr_paciente_mv">{{pendencia.nr_paciente_mv}}</span>
+                    </div>     
+                    <div class="col-sm-3">
+                        <label for="dt_nascimento"><b>Nascimento:</b></label>
+                        <!--<span id="dt_nascimento">{{pendencia.id_paciente.dt_nascimento}}</span>-->
+                        <span id="dt_nascimento">{{pendencia.id_paciente.dt_nascimento|date:"d/m/Y"}}</span>
+                    </div>                                           
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <label for="nome_mae"><b>Nome da Mãe:</b></label>
+                        <span id="nome_mae">{{pendencia.id_paciente.nome_mae}}</span><br>
+                    </div>
+                    <div class="col-sm-6">
+                        <label for="municipio_mv"><b>Município:</b></label>
+                        <span id="municipio_mv">{{pendencia.municipio_mv}}</span>
+                    </div>                        
+                </div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <label for="estabelecimento_mv"><b>Estabelecimento:</b></label>
+                        <span id="estabelecimento_mv">{{estabelecimento}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+                
+        <div class="separator"><i class="fas fa-notes-medical fa-2x" style="color: #1a9cde; margin-right: 8px;"></i>Internação</div>
+        <div class="row my-3">
+            <div class="col-sm">
+                <label for="unidade_mv" class="small">Unidade</label>
+                <input type="text" class="form-control form-control-sm" id="unidade_mv" value="{{pendencia.unidade_mv}}" disabled>
+            </div>
+            <div class="col-sm">
+                <label for="enfermeiro" class="small">Enfermeiro(a)</label>
+                <select class="form-select form-select-sm" id="enfermeiro" required>
+                    <option value=""></option>
+                    {%for profissional in profissionais%}
+                        {%if profissional.id_tp_profissional.conteudo == "Enfermeiro(a)"%}
+                            {%if pendencia.id_enfermeiro.id_pessoa.nome == profissional.id_pessoa.nome%}
+                                <option value="{{profissional.id}}" selected>{{profissional.id_pessoa.nome}}</option>
+                            {%else%}
+                                <option value="{{profissional.id}}">{{profissional.id_pessoa.nome}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm">
+                <label for="medico" class="small">Médico(a)</label>
+                <select class="form-select form-select-sm" id="medico" required>
+                    <option value=""></option>
+                    {%for profissional in profissionais%}
+                        {%if profissional.id_tp_profissional.conteudo == "Médico(a)"%}
+                            {%if pendencia.id_medico.id_pessoa.nome == profissional.id_pessoa.nome%}
+                                <option value="{{profissional.id}}" selected>{{profissional.id_pessoa.nome}}</option>
+                            {%else%}
+                                <option value="{{profissional.id}}">{{profissional.id_pessoa.nome}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm">
+
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-sm">
+                <label for="origem_paciente" class="small">Origem do paciente</label>
+                <select class="form-select form-select-sm" id="origem_paciente" required>
+                    <option value=""></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Origem_Paciente%}
+                            {%if subgrupo.conteudo == pendencia.id_origem_paciente.conteudo%}
+                                <option value="{{subgrupo.id}}" selected>{{subgrupo.conteudo}}</option>
+                            {%else%}
+                                <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm">
+                <label for="motivo_admissao" class="small">Motivo da Admissão</label>
+                <select class="form-select form-select-sm" id="motivo_admissao" required>
+                    <option value=""></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Motivo_Admissao%}
+                            {%if subgrupo.conteudo == pendencia.id_motivo_admissao.conteudo%}
+                                <option value="{{subgrupo.id}}" selected>{{subgrupo.conteudo}}</option>
+                            {%else%}
+                                <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm">
+                <label for="score_de_charlson" class="small">Escore de Charlson</label>
+                <select class="form-select form-select-sm" id="score_de_charlson">
+                    <option value=""></option>
+                    {% for _ in ''|rjust:38 %}
+                        {%if forloop.counter0 == pendencia.score_charlson%}
+                            <option value="{{forloop.counter0}}" selected>{{forloop.counter0}}</option>
+                        {%else%}
+                            <option value="{{forloop.counter0}}">{{forloop.counter0}}</option>
+                        {%endif%}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm">
+                <label for="cuidados_paliativos" class="small">Cuidados paliativos</label>
+                <select class="form-select form-select-sm" id="cuidados_paliativos" required>
+                    <option value=""></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Cuidados_Paliativos%}
+                            {%if subgrupo.conteudo == pendencia.id_cuidados_paliativos.conteudo%}
+                                <option value="{{subgrupo.id}}" selected>{{subgrupo.conteudo}}</option>
+                            {%else%}
+                                <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-sm">
+              <label for="dt_hr_admissao_hospitalar" class="small">Data/Hora admissão hospitalar</label>
+              <input type="text" class="form-control form-control-sm" id="dt_hr_admissao_hospitalar" 
+                    value="{{pendencia.dt_hr_admissao_hospitalar_D_M_Y_H}}" disabled>
+            </div>
+            <div class="col-sm">
+                <label for="dt_hr_admissao_mh" class="small">Data/Hora admissão na MH</label>
+                <input type="datetime-local" class="form-control form-control-sm" id="dt_hr_admissao_mh" 
+                       value="{{pendencia.dt_hr_admissao_MH_D_M_Y_H}}" required>
+            </div>
+            <div class="col-sm highlight-field">
+                <label for="dt_previsao_alta" class="small">Previsão de alta</label>
+                <input type="date" class="form-control form-control-sm" id="dt_previsao_alta_inicial" value="{{pendencia.dt_previsao_alta_inicial}}" style="display: none;">
+                <input type="date" class="form-control form-control-sm" id="dt_previsao_alta" value="{{pendencia.dt_previsao_alta_D_M_Y}}">
+            </div>
+            <div class="col-sm">
+                <label for="dias_internacao_hospitalar" class="small">Dias de internação Hospitalar</label>
+                <div class="input-container">
+                    <input type="text" id="dias_internacao_hospitalar" 
+                            class="form-control form-control-sm 
+                                {% if pendencia.semaforo_internacao_hospitalar == 'green' %}dias-internacao-bg-green
+                                {% elif pendencia.semaforo_internacao_hospitalar == 'yellow' %}dias-internacao-bg-yellow
+                                {% elif pendencia.semaforo_internacao_hospitalar == 'red' %}dias-internacao-bg-red
+                                {% else %}{% endif %}" 
+                            value="{{pendencia.dias_de_internacao_hospitalar}}" readonly>
+                </div>
+            </div>     
+            <div class="col-sm">
+                <label for="dias_internacao_mh" class="small">Dias de internação na MH</label>
+                <div class="input-container">
+                    <input type="text" id="dias_internacao_mh" 
+                            class="form-control form-control-sm 
+                                {% if pendencia.semaforo_internacao_MH == 'green' %}dias-internacao-bg-green
+                                {% elif pendencia.semaforo_internacao_MH == 'yellow' %}dias-internacao-bg-yellow
+                                {% elif pendencia.semaforo_internacao_MH == 'red' %}dias-internacao-bg-red
+                                {% else %}{% endif %}" 
+                            value="{{pendencia.dias_de_internacao_MH}}" readonly>
+                </div>
+            </div>                          
+        </div>
+        <br>
+        
+        <div class="separator"><i class="fas fa-user-doctor fa-2x" style="color: #1a9cde; margin-right: 8px;"></i>Comanejo</div>
+        <label for="comanejo_sim_nao_inicial" style="display: none;">{{pendencia.comanejo_sim_nao_inicial}}</label>
+        <div class="row my-3">
+            <div class="col-sm-2">
+                <div class="my-3" style="display: flex; align-items: center; gap: 8px;">
+                    <label for="comanejo_sim_nao" class="small">Comanejo?</label>
+                    <select id="comanejo_sim_nao" class="form-select form-select-sm" onchange="toggleComanejo()"
+                        {% if pendencia.comanejo_sim_nao_inicial %}disabled{% endif %}>
+                        <option value="False" {% if not pendencia.comanejo_sim_nao %}selected{% endif %}>Não</option>
+                        <option value="True" {% if pendencia.comanejo_sim_nao %}selected{% endif %}>Sim</option>
+                    </select>                     
+                </div>
+            </div>
+            <div class="col-sm-1"></div>
+            <div style="display: none;" class="col-sm-9 comanejo">  <!-- Começa oculto -->
+                <div class="row my-3">
+                    <div class="col-sm-5" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="especialidade_comanejo" class="small" style="white-space: nowrap; flex-shrink: 0;">Especialidade comanejo</label>
+                        <select id="especialidade_comanejo" class="form-select form-select-sm">
+                            <option value="" disabled selected></option>
+                            {% for subgrupo in subgrupos %}
+                                {% if subgrupo.grupo == grupos.Comanejo_Cirurgico %}
+                                    <option value="{{ subgrupo.id }}">{{ subgrupo.conteudo }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-sm-5" style="display: flex; align-items: center; gap: 8px;">
+                        <label for="dt_admissao_comanejo" class="small" style="white-space: nowrap; flex-shrink: 0;">Data admissão comanejo</label>
+                        <input type="date" class="form-control form-control-sm" id="dt_admissao_comanejo">
+                    </div>
+                </div>
+
+                <div class="row my-3">
+                    <div class="col-sm-10"></div>
+                    <div class="col-sm-2">
+                        <button type="button" class="btn custom_02-btn btn btn-block btn-sm float-right" data-dismiss="modal" onclick="adicionarComanejo()">
+                            Adicionar <i class="fa fa-arrow-circle-down"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="display: none;" class="comanejo">  <!-- Começa oculto -->
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="tbComanejo">
+                    <thead>
+                        <tr>
+                            <th style="display:none;">id_comanejo</th>
+                            <th style="display:none;">id_especialidade_comanejo</th>
+                            <th><small>Especialidade comanejo</small></th>
+                            <th><small>Data admissão comanejo</small></th>
+                            <th><small>Data saída comanejo</small></th>
+                            <th class="text-center"><small>Ação</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comanejo in pendencia_comanejos %}
+                        <tr>
+                            <td id="id_comanejo" style="display:none;">{{ comanejo.id }}</td>
+                            <td id="id_especialidade_comanejo" style="display:none;">{{ comanejo.id_especialidade.id }}</td>
+                            <td id="especialidade_comanejo"><small>{{ comanejo.id_especialidade }}</small></td>
+                            <td id="dt_admissao_comanejo" type="date"><small>{{ comanejo.dt_admissao|date:"d/m/Y" }}</small></td>
+                            <td id="dt_saida_comanejo" type="date"><small>{% if comanejo.dt_saida %}{{ comanejo.dt_saida|date:"d/m/Y" }}{% endif %}</small></td>
+                            <td class="text-center">
+                                <button type="button" class="btn custom_02-btn btn-sm btn-edit" onclick="editRowComanejo(this)"> <i class="fas fa-edit"></i></button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="deleteRowComanejo(this)"><i class="fas fa-trash-alt"></i></button>                            
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>        
+        <div class="comanejo"><br></div>
+
+        <div class="separator" id="pendencia_separator"><i class="fas fa-clipboard-list fa-2x" style="color: #1a9cde; margin-right: 8px;"></i>Pendência</div>
+        <div class="row my-3">
+            <div class="col-sm-3" style="display: flex; align-items: center; gap: 8px;">
+                <label for="id_tipo_pendencia" class="small" style="white-space: nowrap; flex-shrink: 0;">Tipo de Pendência</label>
+                <select id="id_tipo_pendencia" class="form-select form-select-sm">
+                    <option value="" disabled selected></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Tipo_Pendencia%}
+                            <option value="{{ subgrupo.id }}">{{subgrupo.conteudo}}</option>
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm-4" style="display: flex; align-items: center; gap: 8px;">
+                <label for="id_pendencia" class="small">Pendência</label>
+                <select id="id_pendencia" class="form-select form-select-sm">
+                    <option value="" disabled selected>Primeiro selecione o tipo de pendência</option>
+                </select>
+            </div>
+            <div class="col-sm-4" style="display: flex; align-items: center; gap: 8px;">
+                <label for="dt_hr_pendencia" class="small" style="white-space: nowrap; flex-shrink: 0;">Data/Hora início</label>
+                <input type="datetime-local" class="form-control form-control-sm" id="dt_hr_pendencia" value="{{ dt_hr_pendencia }}">
+            </div>
+        </div>
+
+        <div class="row my-3">
+
+            <div class="col-sm-10"></div>
+            <div class="col-sm-2">
+                <button type="button" class="btn custom_02-btn btn btn-block btn-sm float-right" data-dismiss="modal" onclick="adicionarPendencia()">
+                    Adicionar <i class="fa fa-arrow-circle-down"></i>
+                </button>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover" id="tbPendenciaItens">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id_pendencia_item</th>
+                        <th style="display:none;">id_tp_pendencia</th>
+                        <th><small>Tipo de pendência</small></th>
+                        <th style="display:none;">id_pendencia</th>
+                        <th><small>Pendência</small></th>
+                        <th><small>Data/Hora da pendência</small></th>
+                        <th><small>Data/Hora encerramento</small></th>
+                        <th class="text-center"><small>Ação</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for pendencia_item in pendencia_itens%}
+                    <tr>         
+                        <td id="id_pendencia_item" style="display:none;">{{pendencia_item.id}}</td>
+                        <td id="id_tp_pendencia" style="display:none;">{{pendencia_item.id_tipo_pendencia.id_tp_pendencia.id}}</td>
+                        <td id="tp_pendencia"><small>{{pendencia_item.id_tipo_pendencia.id_tp_pendencia}}</small></td>
+                        <td id="id_pendencia" style="display:none;"><small>{{pendencia_item.id_tipo_pendencia.id}}</small></td>
+                        <td id="pendencia"><small>{{pendencia_item.id_tipo_pendencia}}</small></td>
+                        <td id="dt_hr_inicio_pendencia"><small>{{pendencia_item.dt_hr_inicio|date:"d/m/Y H:i"}}</small></td>
+                        <td id="dt_hr_encerramento_pendencia"><small>{%if pendencia_item.dt_hr_encerramento%}{{pendencia_item.dt_hr_encerramento|date:"d/m/Y H:i"}}{%endif%}</small></td>
+                        <td class="text-center">
+                            <button type="button" class="btn custom_02-btn btn-sm btn-edit" onclick="editRowPendenciaItem(this)"> <i class="fas fa-edit"></i></button>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+        <br>
+
+        <div class="separator"><i class="fas fa-hospital fa-2x" style="color: #1a9cde; margin-right: 8px;"></i>Alta</div>
+        <div class="row my-3">
+            <div class="col-sm-4">
+                <label for="CID2" class="small">CID Internação</label>
+                <select id="CID" class="form-select form-select-sm select2">
+                    <option value=""></option>
+                    {%for CID in CIDs%}
+                        {%if CID.id == pendencia.id_cid.id%}
+                            <option value="{{CID.id}}" selected>{{CID.codigo}} - {{CID.desc}}</option>
+                        {%else%}
+                            <option value="{{CID.id}}">{{CID.codigo}} - {{CID.desc}}</option>
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label for="motivo_saida" class="small">Motivo da saída</label>
+                <select id="motivo_saida" class="form-select form-select-sm">
+                    <option value=""></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Motivo_Saida%}
+                            {%if subgrupo.conteudo == pendencia.id_motivo_saida.conteudo%}
+                                <option value="{{subgrupo.id}}" selected>{{subgrupo.conteudo}}</option>
+                            {%else%}
+                                <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label for="setor" class="small">Setor</label>
+                {%if pendencia.id_motivo_saida.conteudo == "Transferência interna"%}
+                <select id="setor" class="form-select form-select-sm">
+                {%else%}
+                <select id="setor" class="form-select form-select-sm" disabled>
+                {%endif%}
+                    <option value=""></option>
+                    {%for subgrupo in subgrupos%}
+                        {%if subgrupo.grupo == grupos.Transferencia_Interna%}
+                            {%if subgrupo.conteudo == pendencia.id_setor.conteudo%}
+                                <option value="{{subgrupo.id}}" selected>{{subgrupo.conteudo}}</option>
+                            {%else%}
+                                <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label for="dt_hr_alta_medica" class="small">Data alta médica</label>
+                <input type="datetime-local" class="form-control form-control-sm" id="dt_hr_alta_medica" value="{{pendencia.dt_hr_alta_medica_D_M_Y_H}}">                
+            </div>
+            <div class="col-sm-2">
+                <label for="dt_hr_alta_hospitalar" class="small">Data alta hospitalar</label>
+                <input type="datetime-local" class="form-control form-control-sm" id="dt_hr_alta_hospitalar" value="{{pendencia.dt_hr_alta_hospitalar_D_M_Y_H}}">
+            </div>
+        </div>
+        
+        <br>
+        <div class="row my-3">
+            <div class="col-md-6">
+                <small><i>Criado em {{pendencia.dt_hr_criacao|date:"d/m/Y H:i"}} por {{pendencia.id_usuario_criacao}}</i></small><br>
+                <small><i>Última alteração em {{pendencia.dt_hr_alteracao|date:"d/m/Y H:i"}} por {{pendencia.id_usuario_alteracao}}</i></small>
+            </div>
+            <div class="col-md-2 mt-3">
+                <button type="button" class="btn btn-danger w-100" id="btn-cancelar" onclick="Cancelar()">
+                    <i class="fa-solid fa-xmark"></i> Cancelar
+                </button>
+            </div>
+            <div class="col-md-4 mt-3">
+                <button class="btn custom_02-btn w-100" type="button" onclick="SalvarPendencia()">
+                    <i class="fa fa-save"></i> Salvar Alterações 
+                </button>
+            </div>
+        </div>
+        <div class="row my-3">
+            <div class="col-md-12 mt-3">
+                <button class="btn custom_01-btn w-100" type="button" onclick="FinalizarAtendimento()" id="btn_finalizar" style="display:none;">
+                    <i class="fa fa-check-circle"></i> Finalizar Atendimento 
+                </button>
+            </div>
+        </div>
+    </form>
+    <br>
+</div>
+
+<table class="table table-bordered table-hover table-sm" style="display:none;" id="tbPendenciaItemAcompanhamentos_Inicial">
+        <thead>
+        <tr>
+            <th style="display:none;">modal_id_pendencia_item</th>
+            <th style="display:none;">modal_id_pendencia_item_acompanhamento</th>
+            <th><small>Data/Hora</small></th>
+            <th><small>Usuário</small></th>
+            <th><small>Descrição do acompanhamento</small></th>
+            <th style="display:none;">status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for pendencia_item_acompanhamento in pendencia_itens_acompanhamentos%}
+            <tr>
+                <td id="id_pendencia_item" style="display:none;">{{pendencia_item_acompanhamento.id_pendencia_item.id}}</td>
+                <td id="id_pendencia_item_acompanhamento" style="display:none;">{{pendencia_item_acompanhamento.id}}</td>
+                <td id="dt_hr_acompanhamento"><small>{{pendencia_item_acompanhamento.dt_hr_criacao|date:"d/m/Y H:i:s"}}</small></td>
+                <td id="usuario_acompanhamento"><small>{{pendencia_item_acompanhamento.id_usuario_alteracao}}</small></td>
+                <td id="descricao_acompanhamento"><small>{{pendencia_item_acompanhamento.descricao}}</small></td>    
+                <td id="status" style="display:none;">{{pendencia_item_acompanhamento.status}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+
+
+<!---------------------------------------------------------------------------->
+<!------------------INÍCIO Modal Editar Pendência----------------------------->
+<!---------------------------------------------------------------------------->
+<div class="modal fade" id="editPendenciaModal" tabindex="-1" aria-labelledby="editPendenciaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editPendenciaModalLabel">Editar Pendência</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editPendenciaForm">
+                    <input type="hidden" id="modalIdPendenciaItem" name="modalIdPendenciaItem">
+                    <input type="hidden" id="modalApelido" value="{{apelido}}">
+                    <div class="row my-3">
+                        <div class="col-sm-6">
+                            <label for="modalIdTpPendencia" class="small">Tipo de pendênciaaaaaa</label>
+                            <input type="text" class="form-control form-control-sm" id="modalIdTpPendencia" disabled>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="modalPendencia" class="small">Pendência</label>
+                            <input type="text" class="form-control form-control-sm" id="modalPendencia" disabled>
+                        </div>
+                    </div>
+                    <div class="row my-3">
+                        <div class="col-sm-6">
+                            <label for="modalDtHrInicio" class="form-label small">Data/Hora de início da pendência</label>
+                            <input class="form-control form-control-sm" id="modalDtHrInicio" disabled>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="modalDtHrEncerramento" class="form-label small">Data/Hora de encerramento da pendência</label>
+                            <input type="datetime-local" class="form-control form-control-sm" id="modalDtHrEncerramento">
+                        </div>
+                    </div>
+
+                    <div class="separator">Acompanhamentos</div>
+                    <div class="row my-3">
+                        <div class="col-sm-10">
+                            <textarea id="descricaoAcompanhamento" class="form-control" rows="2" placeholder="Descreva o acompanhamento aqui"></textarea>
+                        </div>
+                        <div class="col-sm-2">
+                            <button type="button" class="btn custom_01-btn btn btn-block btn-sm float-right" data-dismiss="modal" onclick="adicionarAcompanhamento()">
+                                Adicionar <i class="fa fa-plus-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover table-sm" id="tbPendenciaItemAcompanhamentos">
+                            <thead>
+                                <tr>
+                                    <th style="display:none;">modal_id_pendencia_item</th>
+                                    <th style="display:none;">modal_id_pendencia_item_acompanhamento</th>
+                                    <th><small>Data/Hora</small></th>
+                                    <th><small>Usuário</small></th>
+                                    <th><small>Descrição do acompanhamento</small></th>
+                                    <th style="display:none;">status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for pendencia_item_acompanhamento in pendencia_itens_acompanhamentos%}
+                                    {%if pendencia_item_acompanhamento.id_pendencia_item.id == modalIdPendenciaItem%}
+                                        <tr>
+                                            <td id="id_pendencia_item" style="display:none;">{{pendencia_item_acompanhamento.id_pendencia_item.id}} xxx</td>
+                                            <td id="id_pendencia_item_acompanhamento" style="display:none;">{{pendencia_item_acompanhamento.id}}</td>
+                                            <td id="dt_hr_acompanhamento"><small>{{pendencia_item_acompanhamento.dt_hr_criacao|date:"d/m/Y H:i:s"}}</small></td>
+                                            <td id="usuario_acompanhamento"><small>{{pendencia_item_acompanhamento.id_usuario_alteracao}}</small></td>
+                                            <td id="descricao_acompanhamento"><small>{{pendencia_item_acompanhamento.descricao}}</small></td>    
+                                            <td id="status" style="display:none;">{{pendencia_item_acompanhamento.status}}</td>
+                                        </tr>
+                                    {%endif%}
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-sm btn-primary w-25" onclick="fecharEditPendencia()">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!---------------------------------------------------------------------------->
+<!--------------------FIM Modal Editar Pendência------------------------------>
+<!---------------------------------------------------------------------------->
+
+<script>
+    const pendenciaSalvarUrl = "{% url 'pendencia_salvar' %}";
+    const obterNomeUsuarioLogado = "{% url 'obterNomeUsuarioLogado' %}";
+    const urlHome = "{% url 'home' %}";
+</script>
+
+<script src="{%static 'js/pendencia.js'%}"></script>
+
+{%endblock conteudo%}

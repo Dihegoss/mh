@@ -1,0 +1,121 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/profissional.css'%}" />
+
+<div class="container-fluid mt-3 rounded shadow border-0">
+    <div class="container-fluid mt-2 card rounded shadow border-2">
+        <br>
+        <form id="formProfissional" method="post">
+            {%csrf_token%}
+            <div class="row mb-3">
+
+                <div class="col-md-4">
+                    <label for="estabelecimento" class="form-label"><b>Estabelecimento de atuação</b></label>
+                    <select class="form-select form-select-sm" id="estabelecimento" name="estabelecimento" required>
+                        <option value="" selected></option>
+                        {%for estabelecimento in estabelecimentos%}
+                            <option value="{{estabelecimento.id}}">{{estabelecimento.nome}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="tp_profissional" class="form-label"><b>Tipo de profissional</b></label>
+                    <select class="form-select form-select-sm" id="tp_profissional" name="tp_profissional" required>
+                        <option value="" selected></option>
+                        {%for subgrupo in subgrupos%}
+                            <option value="{{subgrupo.id}}">{{subgrupo.conteudo}}</option>
+                        {%endfor%}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label for="nome" class="form-label"><b>Nome do profissional</b></label>
+                    <input class="form-control form-control-sm" type="text" id="nome" required>
+                </div>
+
+                <div class="col-md-2">
+                    <label for="cpf" class="form-label"><b>CPF do profissional</b></label>
+                    <input class="form-control form-control-sm" type="text" id="cpf" required>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2 d-flex justify-content-end">
+                    <button class="btn custom_01-btn btn btn-block btn-sm" type="button" onclick="adicionarProfissional()"><i
+                            class="fa fa-arrow-circle-down"></i> Adicionar</button>
+                </div>
+            </div>
+        </form>
+        <br>
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table class="table table-bordered table-hover custom-table_02" id="tbProfissionais">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id_profissional</th>
+                        <th style="display:none;">id_estabelecimento</th>
+                        <th style="display:none;">id_tp_profissional</th>
+                        <th class="estabelecimento text-center">Estabelecimento de atuação</th>
+                        <th class="tp_profissional text-center">Tipo de profissional</th>
+                        <th class="nome text-center">Nome do profissional</th>
+                        <th class="cpf text-center">CPF do profissional</th>
+                        <th class="ativo text-center">Ativo</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {%for profissional in profissionais%}
+                    <tr data-id-estabelecimento="{{ profissional.id_estabelecimento.id }}" data-id-tp-profissional="{{ profissional.id_tp_profissional.id }}">
+                        <td class="id_profissional" style="display:none;">{{profissional.id}}</td>
+                        <td class="id_estabelecimento" style="display:none;">{{profissional.id_estabelecimento}}</td>
+                        <td class="id_tp_profissional" style="display:none;">{{profissional.id_tp_profissional}}</td>
+                        <td class="estabelecimento text-center">{{profissional.id_estabelecimento.nome}}</td>
+                        <td class="tp_profissional text-center">{{profissional.id_tp_profissional.conteudo}}</td>
+                        <td class="nome text-center">{{profissional.id_pessoa.nome}}</td>
+                        <td class="cpf text-center">
+                            {{profissional.id_pessoa.cpf|slice:":3"}}.{{profissional.id_pessoa.cpf|slice:"3:6"}}.{{profissional.id_pessoa.cpf|slice:"6:9"}}-{{profissional.id_pessoa.cpf|slice:"9:"}}
+                        </td>
+                        <td class="ativo text-center">
+                            {%if profissional.ativo == True%}
+                            <input type="checkbox" class="form-check-input" disabled checked>
+                            {%else%}
+                            <input type="checkbox" class="form-check-input" disabled>
+                            {%endif%}
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn custom_02-btn btn-sm btn-edit"
+                                onclick="editRowProfissional(this)">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRowProfissional(this)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const ProfissionalInserirUrl = "{% url 'profissional_inserir' %}";
+    const ProfissionalAtualizarUrl = "{% url 'profissional_atualizar' %}";
+    const ProfissionalExcluirUrl = "{% url 'profissional_excluir' %}";
+    const obterEstabelecimentos = "{% url 'obter_estabelecimentos' %}";
+    const obterTPsProfissional = "{% url 'obterTPsProfissional' %}";
+</script>
+
+<script src="{%static 'js/profissional.js'%}"></script>
+
+{%endblock conteudo%}

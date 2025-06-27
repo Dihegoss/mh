@@ -1,0 +1,90 @@
+# Configurações Django
+DEBUG=True
+SECRET_KEY=your-secret-key-here-change-in-production
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Configurações de Banco de Dados
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=mhdigital_dev
+DB_USER=mhdigitaluser
+DB_PASSWORD=your-database-password-here
+DB_HOST=db
+DB_PORT=5432
+
+# Configurações de Sessão
+SESSION_COOKIE_AGE=3600
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+SESSION_COOKIE_SECURE=False
+SESSION_COOKIE_HTTPONLY=True
+SESSION_COOKIE_SAMESITE=Lax
+SESSION_COOKIE_DOMAIN=127.0.0.1
+
+# Configurações CSRF
+CSRF_COOKIE_SECURE=False
+CSRF_COOKIE_HTTPONLY=True
+CSRF_COOKIE_SAMESITE=Lax
+CSRF_TRUSTED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
+
+# Configurações de Segurança
+SECURE_SSL_REDIRECT=False
+SECURE_HSTS_SECONDS=31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_PRELOAD=True
+SECURE_BROWSER_XSS_FILTER=True
+SECURE_CONTENT_TYPE_NOSNIFF=True
+X_FRAME_OPTIONS=DENY
+
+# Configurações de Log
+LOG_LEVEL=WARNING
+LOG_FILE=logs/django.log
+
+# Configurações de Email (se necessário)
+EMAIL_HOST=smtp.saude.es.gov.br
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+
+# Configurações do Acesso Cidadão (substitua pelos valores reais)
+ACESSO_CIDADAO_CLIENT_ID=your-client-id-here
+ACESSO_CIDADAO_CLIENT_SECRET=your-client-secret-here
+ACESSO_CIDADAO_AUTHORIZATION_ENDPOINT=https://acessocidadao.es.gov.br/is/connect/authorize
+ACESSO_CIDADAO_TOKEN_ENDPOINT=https://acessocidadao.es.gov.br/is/connect/token
+ACESSO_CIDADAO_USERINFO_ENDPOINT=https://acessocidadao.es.gov.br/is/connect/userinfo
+ACESSO_CIDADAO_LOGOUT_ENDPOINT=https://acessocidadao.es.gov.br/is/logout
+
+# Domínios que devem usar HTTPS
+HTTPS_DOMAINS=localhost,127.0.0.1
+
+# Configurações Oracle MV - Estabelecimentos
+# HRAS (CNES: 2550687)
+MV_HRAS_HOST=your-oracle-host-here
+MV_HRAS_PORT=1521
+MV_HRAS_SERVICE=your-oracle-service-here
+MV_HRAS_USER=your-oracle-user-here
+MV_HRAS_PASSWORD=your-oracle-password-here
+
+# HMSA (CNES: 2446030)
+MV_HMSA_HOST=your-oracle-host-here
+MV_HMSA_PORT=1521
+MV_HMSA_SERVICE=your-oracle-service-here
+MV_HMSA_USER=your-oracle-user-here
+MV_HMSA_PASSWORD=your-oracle-password-here
+
+# HEAC (CNES: 2465752)
+MV_HEAC_HOST=your-oracle-host-here
+MV_HEAC_PORT=1521
+MV_HEAC_SERVICE=your-oracle-service-here
+MV_HEAC_USER=your-oracle-user-here
+MV_HEAC_PASSWORD=your-oracle-password-here
+
+# HESVV e HINSG (CNES: 7530706, 0011800)
+MV_HESVV_HOST=your-oracle-host-here
+MV_HESVV_PORT=1521
+MV_HESVV_SERVICE=your-oracle-service-here
+MV_HESVV_USER=your-oracle-user-here
+MV_HESVV_PASSWORD=your-oracle-password-here
+
+# Configurações de Debug e Desenvolvimento
+DEBUG_MODE=True
+DEBUG_TOKEN=your-debug-token-here 

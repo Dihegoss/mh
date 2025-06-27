@@ -1,0 +1,223 @@
+/* Container e Layout */
+.container-fluid {
+    padding-right: 1rem;
+    padding-left: 1rem;
+    border-radius: 60px; /* Ajuste o valor conforme desejado */
+    overflow: hidden; /* Garante que o conteúdo interno não ultrapasse os cantos arredondados */
+}
+
+/* Cartão (Card) */
+.card {
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    background-color: #f8fafc;
+    border-bottom: 1px solid #e9ecef;
+    padding: 1rem;
+}
+
+.card-header h3 {
+    margin-bottom: 0;
+    font-family: 'Arial', sans-serif;
+    font-weight: 600;
+}
+
+.card-footer {
+    padding: 1.5rem;
+    background-color: #f8fafc;
+}
+
+.card-footer nav .pagination {
+    justify-content: flex-end;
+    margin-bottom: 0;
+}
+
+/* Tabela */
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: transparent;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif; /* Garantir fonte consistente */
+}
+
+.table th,
+.table td {
+    padding: 1rem;
+    vertical-align: middle;
+    font-size: .875rem;
+    white-space: nowrap;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Tabela - Cabeçalho */
+.table thead th {
+    font-size: .75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e9ecef;
+    background-color: #f6f9fc;
+    font-weight: 600;
+}
+
+.table .thead-light th {
+    color: #8898aa;
+    background-color: #f6f9fc;
+}
+
+/* Células da Tabela */
+.table td .media-body {
+    font-size: .875rem;
+    font-family: 'Arial', sans-serif;
+}
+
+.table .thead-dark th {
+    background-color: #1c345d;
+    color: #4d7bca;
+}
+
+.table .thead-light th {
+    background-color: #f6f9fc;
+    color: #8898aa;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    z-index: 1;
+}
+
+.container-fluid {
+    overflow: visible;
+}
+
+.card {
+    overflow: hidden; /* Previne elementos de ultrapassarem os limites */
+}
+
+.card.shadow {
+    z-index: 1; /* Certifique-se de que este valor seja menor que o do menu */
+}
+
+/* Paginação */
+.page-item .page-link,
+.page-item span {
+    font-size: .875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+}
+
+.page-item.active .page-link {
+    box-shadow: 0 7px 14px rgba(50, 50, 93, .1), 0 3px 6px rgba(0, 0, 0, .08);
+}
+
+.page-item.disabled .page-link {
+    opacity: .5;
+}
+
+/* Responsividade */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .btn {
+        margin-bottom: 10px;
+    }
+}
+
+.text-sm {
+    font-size: .875rem !important;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Estilo de Botões */
+.custom_02-btn {
+    color: #ffffff;
+    background-color: #4d7bca;
+    border-color: #4d7bca;
+}
+
+.custom_02-btn:hover {
+    color: #ffffff;
+    background-color: #366b9b;
+    border-color: #366b9b;
+}
+
+/* Se quiser um efeito mais suave, adicione uma transição */
+#tbPendencias tbody tr {
+    transition: background-color 0.3s ease; /* Transição suave */
+}
+
+/* Adicionando uma cor ao fundo da linha sem passar o mouse, apenas para melhor visualização */
+#tbPendencias tbody tr {
+    background-color: #ffffff; /* Cor padrão das linhas */
+}
+
+.filtro {
+    background-color: #f0f0f0; /* Cor de fundo cinza claro */
+}
+
+/* Garantir que o conteúdo dentro da célula da tabela seja centralizado */
+.input-container {
+    display: flex;
+    justify-content: center; /* Alinha os itens horizontalmente no centro */
+    align-items: center; /* Alinha os itens verticalmente no centro */
+    gap: 10px; /* Adiciona um espaço entre o label e o semáforo */
+}
+
+/* Semáforo */
+.semaforo {
+    display: flex;
+    justify-content: center; /* Centraliza o semáforo */
+    gap: 5px; /* Espaçamento entre as luzes */
+    align-items: center; /* Garante que as luzes e o texto fiquem alinhados verticalmente */
+}
+
+.light {
+    width: 20px; /* Tamanho das luzes */
+    height: 20px; /* Tamanho das luzes */
+    border-radius: 50%; /* Torna as luzes redondas */
+    background-color: grey; /* Cor padrão das luzes */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Sombra para dar um efeito de luz */
+    transition: background-color 0.5s ease;
+}
+
+.yellow {
+    background-color: yellow;
+}
+
+.red {
+    background-color: red;
+}
+
+.green {
+    background-color: rgb(88, 222, 88);
+}
+
+#dias_internacao_label {
+    margin: 0; /* Remove a margem do label */
+    text-align: center; /* Centraliza o texto do label */
+    font-size: 1.25rem; /* Aumenta o tamanho da fonte (ajuste conforme necessário) */
+}
+
+.tooltip-custom {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    display: none;
+    z-index: 1000;
+    white-space: nowrap;
+}

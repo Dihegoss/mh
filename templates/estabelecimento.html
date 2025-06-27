@@ -1,0 +1,105 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/estabelecimento.css'%}" />
+
+<div class="container mt-3 rounded shadow border-0">
+    <div class="container-fluid mt-2 card rounded shadow border-2">
+        <br>
+        <form id="formEstabelecimento" method="post">
+            {%csrf_token%}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="nome" class="form-label"><b>Nome</b></label>
+                    <input class="form-control form-control-sm" type="text" id="nome" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="sigla" class="form-label"><b>Sigla</b></label>
+                    <input class="form-control form-control-sm" type="text" id="sigla" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="cnes" class="form-label"><b>CNES</b></label>
+                    <input class="form-control form-control-sm" type="text" id="cnes" required>
+                </div>
+                <div class="col-md-2">
+                    <label for="mv" class="form-label"><b>MV</b></label>
+                    <select class="form-select form-select-sm" id="mv" name="mv" required>
+                        <option value="" disabled selected hidden></option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-10">
+                </div>
+                <div class="col-md-2 d-flex justify-content-end">
+                    <button class="btn custom_01-btn btn btn-block btn-sm" type="button"
+                        onclick="adicionarEstabelecimento()"><i class="fa fa-arrow-circle-down"></i> Adicionar</button>
+                </div>
+            </div>
+        </form>
+        <br>
+    </div>
+
+    <br>
+    <div class="row">
+        <div class="col-md-12 table-responsive">
+            <table class="table table-bordered table-hover custom-table_02" id="tbEstabelecimentos">
+                <thead>
+                    <tr>
+                        <th style="display:none;">id</th>
+                        <th class="Nome">Nome</th>
+                        <th class="Sigla text-center">Sigla</th>
+                        <th class="cnes text-center">CNES</th>
+                        <th class="mv text-center">MV</th>
+                        <th class="ativo text-center">Ativo</th>
+                        <th class="text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for estabelecimento in estabelecimentos %}
+                    <tr>
+                        <td class="id_estabelecimento" style="display:none;">{{ estabelecimento.id }}</td>
+                        <td class="nome">{{ estabelecimento.nome }}</td>
+                        <td class="sigla text-center">{{ estabelecimento.sigla }}</td>
+                        <td class="cnes text-center">{{ estabelecimento.cnes }}</td>
+                        <td class="mv text-center">
+                            {% if estabelecimento.mv == True %}
+                                <input type="checkbox" class="form-check-input" disabled checked>
+                            {% else %}
+                                <input type="checkbox" class="form-check-input" disabled>
+                            {% endif %}
+                        </td>
+                        <td class="ativo text-center">
+                            {% if estabelecimento.ativo == True %}
+                                <input type="checkbox" class="form-check-input" disabled checked>
+                            {% else %}
+                                <input type="checkbox" class="form-check-input" disabled>
+                            {% endif %}
+                        </td>
+                        <td class=" text-center">
+                            <button type="button" class="btn custom_02-btn btn-sm btn-edit"
+                                onclick="editRowEstabelecimento(this)"><i class="fas fa-edit"></i></button>
+                            <button type="button" class="btn btn-danger btn-sm"
+                                onclick="deleteRowEstabelecimento(this)"><i class="fas fa-trash-alt"></i></button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const estabelecimentoInserirUrl = "{% url 'estabelecimento_inserir' %}";
+    const estabelecimentoAtualizarUrl = "{% url 'estabelecimento_atualizar' %}";
+    const estabelecimentoExcluirUrl = "{% url 'estabelecimento_excluir' %}";
+</script>
+
+<script src="{%static 'js/estabelecimento.js'%}"></script>
+
+{%endblock conteudo%}

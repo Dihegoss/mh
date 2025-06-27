@@ -1,0 +1,34 @@
+:root {
+    --header-height: 100px;
+    /* Valor inicial */
+}
+
+.div-header,
+.div-conteudo,
+.div-footer {
+    width: 100%;
+}
+
+.div-conteudo {
+    padding-top: calc(var(--header-height, 0px)) !important;
+}
+
+.custom_01-btn {
+    background-color: #4CAF50; /* Cor de fundo personalizada */
+    color: white; /* Cor do texto */
+}
+
+.custom_01-btn:hover {
+    background-color: #45a049; /* Cor de fundo ao passar o mouse */
+    color: white;
+}
+
+
+.custom_02-btn {
+    background-color: #1a9cde; /* Cor de fundo personalizada */
+    color: white; /* Cor do texto */
+}
+.custom_02-btn:hover {
+    background-color: #2488bc; /* Cor de fundo ao passar o mouse */
+    color: white;
+}

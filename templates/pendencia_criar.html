@@ -1,0 +1,117 @@
+{%extends "base.html"%} {%block conteudo%}
+
+{%load static%}
+
+<link rel="stylesheet" href="{%static 'css/pendencia_criar.css'%}" />
+
+<br>
+<div class="container mt-2 card rounded shadow border-2">
+    <br>
+    <form id="formPendenciaCriar" method="post">
+        {% csrf_token %}
+        <div class="row justify-content-center">
+            <div class="col-11">
+                <div class="form-card">
+                    <div class="row mb-3 justify-content-center text-center">
+                        <div class="col-12 col-md-9">
+                            <div class="input-group">
+                                <input type="number" id="nr_atendimento_mv" value="1287594">
+                                <label for="nr_atendimento_mv" class="text-start">Código do atendimento</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-3 d-flex align-items-center justify-content-center">
+                            <button class="btn custom_01-btn btn btn-block" type="button" onclick="BuscarAtendimento()">
+                                <i class="fas fa-search"></i> Buscar Atendimento
+                            </button>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <input type="number" name="exp" id="nr_paciente_mv" readonly>
+                                <label for="nr_paciente_mv">Código do Paciente</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <input type="text" name="cvcpwd" class="placeicon" id="paciente_nome" style="font-weight: bold;" readonly>
+                                <label for="paciente_nome">Nome do Paciente</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="input-group">
+                                <input type="text" name="exp" id="dt_nascimento" readonly>
+                                <label for="dt_nascimento">Data Nascimento</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="input-group">
+                                <input type="text" class="placeicon" id="municipio_mv" readonly>
+                                <label for="municipio_mv">Município</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <input type="text" name="cvcpwd" class="placeicon" id="nome_mae" readonly>
+                                <label for="nome_mae">Nome da Mãe</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12 d-flex align-items-center justify-content-center">
+                            <button class="btn custom_02-btn w-100" type="button" onclick="CriarPendenciaProximo()">
+                                Próximo <i class="fa fa-arrow-circle-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <!-- Campos ocultos para transferência das informações obtidas do MV-->
+        <!--<label id="cod_atendimento" style="display: none;"></label>-->
+
+        <label style="display: none;">nr_cpf: <input id="nr_cpf"></label>
+        <label style="display: none;">nr_cns: <input id="nr_cns"></label>
+        <label style="display: none;">nr_ddd_fone: <input id="nr_ddd_fone"></label>
+        <label style="display: none;">nr_ddd_celular: <input id="nr_ddd_celular"></label>
+        <label style="display: none;">nr_fone: <input id="nr_fone"></label>
+        <label style="display: none;">nr_fone_comercial: <input id="nr_fone_comercial"></label>
+        <label style="display: none;">nr_celular: <input id="nr_celular"></label>
+        <label style="display: none;">ds_endereco: <input id="ds_endereco"></label>
+        <label style="display: none;">nr_endereco: <input id="nr_endereco"></label>
+        <label style="display: none;">nm_bairro: <input id="nm_bairro"></label>
+        <label style="display: none;">ds_complemento: <input id="ds_complemento"></label>
+        <label style="display: none;">nr_cep: <input id="nr_cep"></label>
+        <label style="display: none;">municipio_mv: <input id="municipio_mv"></label>
+        <label style="display: none;">cd_uf: <input id="cd_uf"></label>
+        <label style="display: none;">estabelecimento_mv: <input id="estabelecimento_mv"></label>
+        <label style="display: none;">nr_cnes: <input id="nr_cnes"></label>
+        <label style="display: none;">nm_setor: <input id="nm_setor"></label>
+        <label style="display: none;">unidade_mv: <input id="unidade_mv">
+        <label style="display: none;">nm_medico: <input id="nm_medico"></label>
+        <label style="display: none;">especialidade: <input id="especialidade"></label>
+        <label style="display: none;">dt_hr_admissao_hospitalar: <input id="dt_hr_admissao_hospitalar"></label>
+        <label style="display: none;">dt_previsao_alta: <input id="dt_previsao_alta"></label>
+        <label style="display: none;">dias_internacao: <input id="dias_internacao"></label>
+        <label style="display: none;">dt_hr_alta_medica: <input id="dt_hr_alta_medica"></label>
+        <label style="display: none;">dt_hr_alta_hospitalar: <input id="dt_hr_alta_hospitalar"></label>
+    </form>
+    <br>
+</div>
+
+<script>
+    
+    const buscarAtendimentoUrl = "{% url 'buscar_atendimento' %}";
+</script>
+
+<script src="{%static 'js/pendencia_criar.js'%}"></script>
+
+{%endblock conteudo%}

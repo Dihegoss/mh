@@ -1,0 +1,25 @@
+stages:
+  - deploy
+
+deploy_job:
+  stage: deploy
+  before_script:
+    - apk add --update openssh
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY_HML" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H $SSH_HOST_HML >> ~/.ssh/known_hosts
+  script:
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && rm -rf $DIR_PROJECT_NAME_HML"
+    - echo "Building new application image..."
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && git clone -b develop $PROTOCOLO$REPOSITORY_NAME:$PROJECT_TOKEN@$REPOSITORY_URL $DIR_PROJECT_NAME_HML"
+    - echo "Configuring environment file..."
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && mkdir -p /opt/mhdigital"
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && cp $DIR_PROJECT_NAME_HML/env-example.txt /opt/mhdigital/.env || echo 'env-example.txt not found, creating empty .env' && touch /opt/mhdigital/.env"
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && chown root:root /opt/mhdigital/.env && chmod 600 /opt/mhdigital/.env"
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && docker compose build $COMPOSE_SERVICE_HML"
+    - echo "Deploying new application container..."
+    - ssh $SSH_USER@$SSH_HOST_HML "cd $WORK_DIR && docker compose up -d $COMPOSE_SERVICE_HML"
+
+  only:
+    - develop

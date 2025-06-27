@@ -1,0 +1,57 @@
+# Oracle Instant Client (será baixado durante o build)
+oracle-instantclient_21_14/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos de desenvolvimento
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Arquivos de ambiente (serão passados via env_file)
+.env
+.env-*
+
+# Arquivos estáticos coletados
+staticfiles/
+
+# Banco de dados
+*.db
+*.sqlite3
+
+# Arquivos de backup
+*.bak
+*.backup 

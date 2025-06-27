@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mhdigital:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./logs:/mhdigital/logs
+      - ./static:/mhdigital/static
+    env_file:
+      - /opt/mhdigital/.env
+    command: python manage.py runserver 0.0.0.0:8000
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: mhdigital_dev
+      POSTGRES_USER: mhdigitaluser
+      POSTGRES_PASSWORD: mhdigitalpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data: 
